@@ -12,8 +12,10 @@ draws = ½).
 | `gold.html` | legendary (gold) only, level 6 |
 
 Each page embeds every ranked finalist and filters client-side to teams that
-contain a chosen set of masks (up to 5); it renders at most 100 rows. Pages are
-self-contained (mask icons inlined; only Google Fonts is external).
+contain a chosen set of masks (up to 5); it renders at most 100 rows. Mask icons
+are inlined, while the polished site emblem lives at
+`assets/masquerade-medal.png` (mirrored under `docs/assets`). Only Google Fonts
+is external.
 
 The same files are mirrored under `docs/` so GitHub Pages works from either
 **`/ (root)`** or **`/docs`**. `.nojekyll` is present in both.
