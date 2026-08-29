@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mask Reference · Masquerade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16070b">
+<meta name="description" content="Every Masquerade mask: stats and skill text at each level.">
+<link rel="icon" type="image/png" href="./assets/masquerade-medal.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+:root {
+  --accent: #d3a746; --accent2: #a61d31;
+  --ground: #16070b; --paper: #281016; --paper-2: #1e0b10;
+  --ink: #f8f1df; --ink-soft: #d3c6bd; --mute: #9f8d85;
+  --line: rgba(241,214,138,.18); --bar-track: #3a1b22;
+  --chip: #2a1118; --chip-on: color-mix(in srgb, var(--accent) 22%, #2a1118);
+  --bad: #ef7d82; --chip-ex: color-mix(in srgb, #a61d31 32%, #2a1118);
+  --good: #72c69a; --chip-good: color-mix(in srgb, #2f7d55 28%, #2a1118);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
+    --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
+    --line: #342b41; --bar-track: #2c2439;
+    --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
+    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
+  --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
+  --line: #342b41; --bar-track: #2c2439;
+  --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
+  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
+}
+body {
+  margin: 0; background: radial-gradient(circle at 82% 3%, rgba(143,19,37,.28), transparent 32rem), var(--ground); color: var(--ink);
+  font-family: "Instrument Sans", system-ui, sans-serif; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: clamp(1.2rem,4vw,2.4rem) clamp(1rem,4vw,2.4rem) 5rem; }
+.eyebrow { font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 .7rem; }
+h1 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: clamp(2rem,5.5vw,3.3rem); line-height: 1.06; margin: 0 0 .7rem; text-wrap: balance; letter-spacing: -.01em; }
+h1 em { font-style: italic; color: var(--accent); }
+.lede { max-width: 64ch; color: var(--ink-soft); margin: 0 0 1.6rem; }
+.backlink { display: inline-flex; align-items: center; gap: .45rem; margin-bottom: 1.5rem; font-size: .78rem; text-decoration: none; color: var(--mute); }
+.backlink:hover { color: var(--accent); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: .6rem; margin-bottom: 2rem; }
+.tile { background: linear-gradient(145deg,var(--paper),var(--paper-2)); border: 1px solid var(--line); border-radius: 14px; padding: .9rem 1rem; }
+.tile .k { font-size: .68rem; letter-spacing: .13em; text-transform: uppercase; color: var(--mute); display: block; margin-bottom: .25rem; }
+.tile .v { font-family: "IBM Plex Mono", monospace; font-size: 1.25rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.tile .v small { font-size: .78rem; color: var(--mute); font-weight: 400; }
+
+h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4rem; margin: 2.2rem 0 .3rem; }
+.note { color: var(--mute); font-size: .88rem; margin: 0 0 1rem; max-width: 62ch; }
+
+/* filter */
+.filter { background: linear-gradient(145deg,rgba(40,16,22,.97),rgba(30,11,16,.97)); border: 1px solid color-mix(in srgb,var(--accent) 55%,transparent); border-radius: 18px; padding: 1.2rem 1.25rem 1.35rem; margin-bottom: 1.8rem; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+.filter-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem 1rem; margin-bottom: .85rem; }
+.filter-top h2 { margin: 0; font-size: 1.15rem; }
+.filter-status { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink-soft); }
+.filter-clear { margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft); font: inherit; font-size: .8rem; padding: .25rem .7rem; cursor: pointer; }
+.filter-clear:hover { border-color: var(--accent); color: var(--accent); }
+.chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(172px,1fr)); gap: 1rem 1.6rem; padding: .5rem .2rem 0; }
+.chip { position: relative; display: flex; align-items: center; gap: .55rem; padding: .45rem .55rem; border: 1px solid var(--line); border-radius: 11px; background: var(--chip); font-size: .82rem; text-align: left; color: var(--ink); overflow: visible; }
+.chip[data-state="in"] { background: var(--chip-on); border-color: var(--accent); font-weight: 600; }
+.chip[data-state="ex"] { background: var(--chip-ex); border-color: var(--bad); }
+.chip[data-state="ex"] .cn { text-decoration: line-through; opacity: .7; }
+.chip img { width: 40px; height: 40px; border-radius: 8px; flex: none; background: var(--paper-2); }
+.chip[data-state="ex"] img { filter: grayscale(1) opacity(.55); }
+.chip .cn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip .cs { font-family: "IBM Plex Mono", monospace; font-size: .66rem; color: var(--mute); flex: none; margin-left: auto; }
+/* corner toggles */
+.chip .tgl { position: absolute; top: -8px; width: 19px; height: 19px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--paper); color: var(--mute); font: 700 12px/17px "IBM Plex Mono", monospace; text-align: center;
+  cursor: pointer; padding: 0; z-index: 2; transition: transform .08s ease; }
+.chip .tgl:hover { transform: scale(1.15); }
+.chip .plus  { left: -8px; }
+.chip .minus { right: -8px; }
+.chip .plus.on  { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip .minus.on { background: var(--bad); border-color: var(--bad); color: #fff; }
+.chip .tgl:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+.flegend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font-size: .78rem; color: var(--mute); margin: .3rem 0 1rem; align-items: center; }
+.flegend b { font-family: "IBM Plex Mono", monospace; }
+.fopt { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; color: var(--ink-soft); }
+.fopt input { accent-color: var(--accent); cursor: pointer; }
+.fopt-sub { color: var(--mute); }
+/* prominent dedup toggle */
+.dedup-box { display: flex; gap: .7rem; align-items: flex-start; margin: .2rem 0 1rem; padding: .7rem .85rem;
+  border: 1px solid var(--accent); border-radius: 11px; background: var(--chip-on); cursor: pointer; }
+.dedup-box input { width: 18px; height: 18px; margin-top: .1rem; accent-color: var(--accent); flex: none; cursor: pointer; }
+.dedup-box .dt { font-weight: 700; font-size: .92rem; color: var(--ink); }
+.dedup-box .dd { font-size: .8rem; color: var(--ink-soft); margin-top: .15rem; }
+.dedup-box .dd b { font-family: "IBM Plex Mono", monospace; }
+.flegend .i { color: var(--accent); }
+.flegend .e { color: var(--bad); }
+
+/* list */
+.list-head, .row { display: grid; grid-template-columns: 3rem 6.2rem 1fr; gap: 1rem; align-items: center; }
+.list-head { position: sticky; top: 0; z-index: 5; background: var(--ground); padding: .55rem 1rem; border-bottom: 1px solid var(--line); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; color: var(--mute); }
+.row { padding: .85rem 1rem; border-bottom: 1px solid var(--line); background: var(--paper); }
+.row.alt { background: var(--paper-2); }
+.row.top3 { border-left: 3px solid var(--accent2); }
+.row.top3 .rank { color: var(--accent2); }
+.row.has-mu { cursor: pointer; }
+.row.has-mu:hover { background: var(--chip-on); }
+.row .caret { display: inline-block; margin-left: .25rem; font-size: .7rem; color: var(--mute); transition: transform .12s ease; }
+.row.open .caret { transform: rotate(180deg); }
+.rank { font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; font-weight: 600; color: var(--mute); text-align: right; font-variant-numeric: tabular-nums; }
+.wr { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+.wr b { font-size: 1.08rem; font-weight: 600; }
+.wr .pct { font-size: .76rem; color: var(--mute); }
+.wr-bar { display: block; height: 4px; border-radius: 3px; background: var(--bar-track); overflow: hidden; margin-top: .3rem; }
+.wr-bar i { display: block; height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); }
+.mu-field { display: block; margin-top: .25rem; font-size: .68rem; color: var(--mute); }
+.row.perm .m { opacity: .5; }
+.row.perm:hover .m { opacity: .85; }
+.perm-pill { display: inline-flex; align-items: center; gap: .3rem; align-self: center;
+  font-size: .74rem; font-weight: 600; padding: .22rem .55rem; border-radius: 999px;
+  border: 1px solid var(--accent2); color: var(--ink);
+  background: color-mix(in srgb, var(--accent2) 15%, transparent); white-space: nowrap; }
+.drawer { padding: .8rem 1rem 1rem; background: var(--paper-2); border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: 1fr 1fr; gap: .55rem 1.4rem; align-items: start; }
+.mu-hd { grid-column: 1 / -1; color: var(--ink-soft); font-size: .8rem; }
+.mu-grp { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+.mu-grp.hard { grid-column: 1; }
+.mu-grp.soft { grid-column: 2; }
+.mu-lbl { font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.mu-grp.hard .mu-lbl { color: var(--bad); }
+.mu-grp.soft .mu-lbl { color: var(--good); }
+.mu-chip { display: flex; align-items: center; gap: .45rem; font-size: .78rem; padding: .32rem .5rem; border-radius: 9px; border: 1px solid var(--line); background: var(--chip); }
+.mu-chip b { font-family: "IBM Plex Mono", monospace; flex: none; width: 2.6rem; }
+.mu-chip .mu-r { color: var(--mute); font-family: "IBM Plex Mono", monospace; flex: none; font-size: .72rem; }
+.mu-chip .mu-ics { display: inline-flex; gap: 3px; margin-left: auto; }
+.mu-chip .mu-ics img { width: 40px; height: 40px; border-radius: 7px; background: var(--paper-2); display: block; }
+.mu-grp.hard .mu-chip { border-color: var(--bad); background: var(--chip-ex); }
+.mu-grp.hard .mu-chip b { color: var(--bad); }
+.mu-grp.soft .mu-chip { border-color: var(--good); background: var(--chip-good); }
+.mu-grp.soft .mu-chip b { color: var(--good); }
+@media (max-width: 620px) { .drawer { grid-template-columns: 1fr; } .mu-grp.hard, .mu-grp.soft { grid-column: 1; } }
+.lineup { display: flex; flex-wrap: wrap; gap: .5rem; }
+.m { position: relative; width: 90px; flex: none; display: flex; flex-direction: column; align-items: center; gap: .22rem; text-align: center; }
+.m img { width: 50px; height: 50px; border-radius: 9px; border: 1px solid var(--line); background: var(--paper-2); }
+.m.sel img { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.m .slot { position: absolute; top: -5px; left: 50%; transform: translateX(-50%) translateX(-25px); width: 15px; height: 15px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: .6rem; font-weight: 600; line-height: 15px; font-family: "IBM Plex Mono", monospace; }
+.m .mn { font-size: .72rem; line-height: 1.2; color: var(--ink-soft); }
+.m .lv { font-family: "IBM Plex Mono", monospace; font-size: .62rem; color: var(--mute); }
+.empty { padding: 2rem 1rem; text-align: center; color: var(--mute); }
+.m[data-typ] { cursor: help; }
+.mpop { position: fixed; z-index: 60; width: min(300px, calc(100vw - 1.5rem)); padding: .85rem .95rem;
+  background: var(--paper); border: 1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
+  border-radius: 13px; box-shadow: 0 24px 60px rgba(0,0,0,.5); font-size: .82rem; color: var(--ink); }
+.mpop .mp-hd { display: flex; align-items: center; gap: .55rem; margin-bottom: .5rem; }
+.mpop .mp-hd img { width: 42px; height: 42px; border-radius: 8px; background: var(--paper-2); flex: none; }
+.mpop .mp-nm { font-weight: 700; font-size: .95rem; }
+.mpop .mp-sub { font-size: .68rem; color: var(--mute); letter-spacing: .04em; text-transform: uppercase; }
+.mpop .mp-stat { font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--ink-soft); margin-bottom: .35rem; }
+.mpop .mp-eff { color: var(--ink-soft); line-height: 1.5; }
+.mpop .mp-x { color: var(--bad); font-size: .72rem; margin-top: .4rem; }
+.mpop a { display: inline-block; margin-top: .5rem; font-size: .74rem; }
+footer { margin-top: 3rem; color: var(--mute); font-size: .8rem; max-width: 66ch; }
+footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--ink-soft); }
+@media (max-width: 720px) {
+  .list-head, .row { grid-template-columns: 2.1rem 4.8rem 1fr; gap: .55rem; }
+  .row { padding: .75rem .55rem; }
+  .m { width: 68px; } .m img { width: 44px; height: 44px; }
+}
+
+/* branded masthead */
+.mast { position: relative; display: grid; grid-template-columns: 1fr 180px; align-items: center; gap: 2rem; min-height: 260px; margin-bottom: 1.6rem; padding: 1rem 0 2rem; border-bottom: 1px solid var(--line); overflow: hidden; }
+.mast-copy { position: relative; z-index: 1; }
+.mast-mark { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0,0,0,.4)); }
+.mast::after { content: ""; position: absolute; right: -20px; width: 220px; height: 220px; border: 1px solid var(--line); border-radius: 50%; box-shadow: 0 0 0 18px rgba(211,167,70,.025), 0 0 0 19px rgba(211,167,70,.07); }
+.mast h1 { max-width: 16ch; }
+.mast .lede { margin-bottom: 0; }
+.list-head { backdrop-filter: blur(16px); background: color-mix(in srgb,var(--ground) 88%,transparent); }
+#list { overflow: hidden; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 16px 16px; }
+.row:last-child { border-bottom: 0; }
+.chip,.filter-clear,.dedup-box,.row { transition: border-color .16s ease,background .16s ease,transform .16s ease; }
+.chip:hover { border-color: color-mix(in srgb,var(--accent) 65%,var(--line)); transform: translateY(-1px); }
+.filter-clear { padding: .4rem .8rem; border-radius: 999px; }
+.filter button:focus-visible,.filter input:focus-visible,.backlink:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 720px) {
+  .mast { grid-template-columns: 1fr; text-align: center; padding-top: .5rem; }
+  .mast-copy { display: grid; justify-items: center; }
+  .mast-mark { grid-row: 1; justify-self: center; width: 145px; height: 145px; }
+  .mast::after { width: 175px; height: 175px; right: 50%; transform: translateX(50%); top: -13px; }
+  .mast h1 { font-size: clamp(2.2rem,10vw,3rem); }
+}
+</style>
+</head>
+<body>
+
+<style>
+.mk-controls { position: sticky; top: .4rem; z-index: 20; display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center;
+  background: color-mix(in srgb,var(--ground) 90%,transparent); backdrop-filter: blur(12px);
+  border: 1px solid var(--line); border-radius: 14px; padding: .75rem .9rem; margin-bottom: 1.6rem; }
+.mk-controls input { flex: 1 1 180px; min-width: 140px; background: var(--chip); border: 1px solid var(--line);
+  border-radius: 9px; color: var(--ink); font: inherit; font-size: .85rem; padding: .4rem .65rem; }
+.mk-seg { display: inline-flex; gap: .25rem; }
+.mk-seg button { background: var(--chip); border: 1px solid var(--line); color: var(--ink-soft); font: inherit;
+  font-size: .76rem; padding: .3rem .6rem; border-radius: 8px; cursor: pointer; }
+.mk-seg button.on { background: var(--chip-on); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+.mk-seg .lbl { align-self: center; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.mk-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1rem; }
+.mcard { background: linear-gradient(145deg,var(--paper),var(--paper-2)); border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.1rem 1.1rem; }
+.mcard.hide { display: none; }
+.mcard-hd { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; }
+.mcard-hd img { width: 52px; height: 52px; border-radius: 10px; background: var(--paper-2); flex: none; }
+.mcard-nm { font-family: "Fraunces", Georgia, serif; font-size: 1.25rem; }
+.mcard-tag { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.mcard-x { font-size: .72rem; color: var(--bad); }
+.mk-lv { display: flex; gap: .25rem; margin: .3rem 0 .6rem; }
+.mk-lv button { flex: 1; background: var(--chip); border: 1px solid var(--line); color: var(--ink-soft);
+  font: 600 .74rem "IBM Plex Mono", monospace; padding: .28rem 0; border-radius: 7px; cursor: pointer; }
+.mk-lv button.on { background: var(--accent); border-color: var(--accent); color: #1c1008; }
+.mk-lv button.step { box-shadow: inset 0 -2px 0 var(--accent2); }
+.mcard-stat { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink); margin-bottom: .35rem; }
+.mcard-eff { color: var(--ink-soft); font-size: .84rem; line-height: 1.5; min-height: 2.5em; }
+.mcard-note { font-size: .68rem; color: var(--mute); margin-top: .45rem; }
+</style>
+<div class="wrap">
+  <a class="backlink" href="./index.html"><span aria-hidden="true">←</span> Masquerade atelier</a>
+  <p class="eyebrow">Reference · 62 masks</p>
+  <h1>Mask <em>codex</em></h1>
+  <p class="lede">Stats change every level; the skill upgrades in three tiers (marked with a gold underline).
+  Pick a level per card, or set them all at once. Mechanics decoded from the client; wording condensed
+  from the in-game skill library.</p>
+
+  <div class="mk-controls">
+    <input id="q" type="search" placeholder="search masks…" autocomplete="off">
+    <div class="mk-seg" id="rar">
+      <span class="lbl">rarity</span>
+      <button data-q="all" class="on">all</button>
+      <button data-q="legendary">legendary</button>
+      <button data-q="epic">epic</button>
+      <button data-q="rare">rare</button>
+    </div>
+    <div class="mk-seg" id="glv">
+      <span class="lbl">all to</span>
+      <button data-lv="1">L1</button><button data-lv="2">L2</button><button data-lv="3">L3</button><button data-lv="4">L4</button><button data-lv="5">L5</button><button data-lv="6">L6</button>
+    </div>
+  </div>
+
+  <div class="mk-grid" id="grid"></div>
+  <footer>Decoded from <code>reverse/data/config.json</code>. Not affiliated with OneMT.</footer>
+</div>
+
+<script>
+const MASKS = [{"t":1001,"n":"Phoenix","q":"legendary","i":"./assets/masks/1001-phoenix.webp","x":"Thunderbird","s":[[4,15],[6,22],[6,22],[8,29],[10,36],[10,36]],"eff":["when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner","when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner","when a called partner joins \u2192 grant +5 Tech / +3 Pop to that partner","when a called partner joins \u2192 grant +5 Tech / +3 Pop to that partner","when a called partner joins \u2192 grant +5 Tech / +3 Pop to that partner","when a called partner joins \u2192 grant +9 Tech / +4 Pop to that partner"],"steps":[3,6]},{"t":1004,"n":"Quetzalcoatlus","q":"legendary","i":"./assets/masks/1004-quetzalcoatlus.webp","x":"","s":[[12,7],[18,10],[18,10],[24,13],[30,16],[30,16]],"eff":["on leaving the floor \u2192 summon 2 partners (35% Tech / 3 Pop each)","on leaving the floor \u2192 summon 2 partners (35% Tech / 3 Pop each)","on leaving the floor \u2192 summon 2 partners (40% Tech / 4 Pop each)","on leaving the floor \u2192 summon 2 partners (40% Tech / 4 Pop each)","on leaving the floor \u2192 summon 2 partners (40% Tech / 4 Pop each)","on leaving the floor \u2192 summon 2 partners (45% Tech / 5 Pop each)"],"steps":[3,6]},{"t":1010,"n":"Unicorn","q":"legendary","i":"./assets/masks/1010-unicorn.webp","x":"","s":[[6,13],[9,19],[9,19],[12,25],[15,31],[15,31]],"eff":["when the nearest ally-left's skill fires \u2192 make them re-trigger it once more","when the nearest ally-left's skill fires \u2192 make them re-trigger it once more","when the nearest ally-left's skill fires \u2192 make them re-trigger it once more","when the nearest ally-left's skill fires \u2192 make them re-trigger it once more","when the nearest ally-left's skill fires \u2192 make them re-trigger it once more","when the nearest ally-left's skill fires \u2192 make them re-trigger it once more"],"steps":[3,6]},{"t":1101,"n":"Cerberus","q":"legendary","i":"./assets/masks/1101-cerberus.webp","x":"Wild Boar","s":[[7,10],[10,16],[10,18],[13,24],[16,30],[16,30]],"eff":["when an ally leaves the floor \u2192 grant +1 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +3 Tech / +3 Pop to self"],"steps":[3,6]},{"t":1104,"n":"Angel","q":"legendary","i":"./assets/masks/1104-angel.webp","x":"Cursed Toad","s":[[10,7],[15,11],[17,11],[22,15],[27,19],[27,19]],"eff":["when an ally's Pop is reduced \u2192 grant +1 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +1 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +2 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +2 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +2 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +3 Tech / +3 Pop to that ally (\u22645\u00d7)"],"steps":[3,6]},{"t":2001,"n":"Demon","q":"legendary","i":"./assets/masks/2001-demon.webp","x":"Lion","s":[[8,11],[11,17],[11,17],[14,23],[17,29],[17,29]],"eff":["when an ally leaves the floor \u2192 deal 15% of Technique to 2 random enemies (\u22646\u00d7)","when an ally leaves the floor \u2192 deal 15% of Technique to 2 random enemies (\u22646\u00d7)","when an ally leaves the floor \u2192 deal 20% of Technique to 2 random enemies (\u22646\u00d7)","when an ally leaves the floor \u2192 deal 20% of Technique to 2 random enemies (\u22646\u00d7)","when an ally leaves the floor \u2192 deal 20% of Technique to 2 random enemies (\u22646\u00d7)","when an ally leaves the floor \u2192 deal 25% of Technique to 2 random enemies (\u22646\u00d7)"],"steps":[3,6]},{"t":2006,"n":"Anubis","q":"legendary","i":"./assets/masks/2006-anubis.webp","x":"Gargoyle","s":[[12,7],[17,11],[17,11],[22,15],[27,19],[27,19]],"eff":["on own death \u2192 grant +2 Tech / +1 Pop to all other allies","on own death \u2192 grant +2 Tech / +1 Pop to all other allies","on own death \u2192 grant +3 Tech / +2 Pop to all other allies","on own death \u2192 grant +3 Tech / +2 Pop to all other allies","on own death \u2192 grant +3 Tech / +2 Pop to all other allies","on own death \u2192 grant +4 Tech / +4 Pop to all other allies"],"steps":[3,6]},{"t":3001,"n":"Ebon Dragon","q":"legendary","i":"./assets/masks/3001-ebon-dragon.webp","x":"Blackbear","s":[[7,6],[12,10],[12,10],[15,16],[17,23],[17,23]],"eff":["at battle start \u2192 deal 30% of Technique to 3 random enemies","at battle start \u2192 deal 30% of Technique to 3 random enemies","at battle start \u2192 deal 35% of Technique to 3 random enemies","at battle start \u2192 deal 35% of Technique to 3 random enemies","at battle start \u2192 deal 35% of Technique to 3 random enemies","at battle start \u2192 deal 40% of Technique to 3 random enemies"],"steps":[3,6]},{"t":3007,"n":"Kraken","q":"legendary","i":"./assets/masks/3007-kraken.webp","x":"Merman","s":[[9,10],[14,14],[14,14],[19,18],[24,22],[24,22]],"eff":["when an enemy dies \u2192 \u22123 Pop to the lowest-Pop enemy (\u22646\u00d7)","when an enemy dies \u2192 \u22123 Pop to the lowest-Pop enemy (\u22646\u00d7)","when an enemy dies \u2192 \u22124 Pop to the lowest-Pop enemy (\u22646\u00d7)","when an enemy dies \u2192 \u22124 Pop to the lowest-Pop enemy (\u22646\u00d7)","when an enemy dies \u2192 \u22124 Pop to the lowest-Pop enemy (\u22646\u00d7)","when an enemy dies \u2192 \u22127 Pop to the lowest-Pop enemy (\u22646\u00d7)"],"steps":[3,6]},{"t":4003,"n":"Sphinx","q":"legendary","i":"./assets/masks/4003-sphinx.webp","x":"Pegasus","s":[[6,13],[9,19],[9,19],[12,25],[15,31],[15,31]],"eff":["when own Pop is reduced \u2192 grant +2 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +2 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +3 Tech / +3 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +3 Tech / +3 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +3 Tech / +3 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +5 Tech / +4 Pop to the next ally on the right"],"steps":[3,6]},{"t":4006,"n":"Frost Giant","q":"legendary","i":"./assets/masks/4006-frost-giant.webp","x":"Tiger","s":[[8,11],[12,16],[12,16],[15,22],[18,28],[18,28]],"eff":["when an ally reduces an enemy to 0 Pop \u2192 deal 30% of Technique to the 2 front enemies","when an ally reduces an enemy to 0 Pop \u2192 deal 30% of Technique to the 2 front enemies","when an ally reduces an enemy to 0 Pop \u2192 deal 35% of Technique to the 2 front enemies","when an ally reduces an enemy to 0 Pop \u2192 deal 35% of Technique to the 2 front enemies","when an ally reduces an enemy to 0 Pop \u2192 deal 35% of Technique to the 2 front enemies","when an ally reduces an enemy to 0 Pop \u2192 deal 40% of Technique to the 2 front enemies"],"steps":[3,6]},{"t":4101,"n":"Fenrir","q":"legendary","i":"./assets/masks/4101-fenrir.webp","x":"Man-eater","s":[[8,11],[11,17],[11,17],[14,23],[17,29],[17,29]],"eff":["when own Pop is reduced \u2192 \u22123 Pop to a random enemy","when own Pop is reduced \u2192 \u22123 Pop to a random enemy","when own Pop is reduced \u2192 \u22124 Pop to a random enemy","when own Pop is reduced \u2192 \u22124 Pop to a random enemy","when own Pop is reduced \u2192 \u22124 Pop to a random enemy","when own Pop is reduced \u2192 \u22125 Pop to a random enemy"],"steps":[3,6]},{"t":4103,"n":"Basilisk","q":"legendary","i":"./assets/masks/4103-basilisk.webp","x":"Zebra","s":[[8,11],[12,16],[12,16],[16,21],[20,26],[20,26]],"eff":["when the ally in front loses Pop \u2192 \u22122 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22122 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22123 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22123 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22123 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22124 Pop to a random enemy"],"steps":[3,6]},{"t":5001,"n":"Flame Giant","q":"legendary","i":"./assets/masks/5001-flame-giant.webp","x":"Evil Specter","s":[[8,11],[12,16],[12,16],[14,23],[16,30],[16,30]],"eff":["each time an ally acts / at start \u2192 \u22122 Pop to 1 random enemy (\u22647\u00d7)","each time an ally acts / at start \u2192 \u22122 Pop to 1 random enemy (\u22647\u00d7)","each time an ally acts / at start \u2192 \u22124 Pop to 1 random enemy (\u22647\u00d7)","each time an ally acts / at start \u2192 \u22124 Pop to 1 random enemy (\u22647\u00d7)","each time an ally acts / at start \u2192 \u22124 Pop to 1 random enemy (\u22647\u00d7)","each time an ally acts / at start \u2192 \u22123 Pop to 2 random enemies (\u22647\u00d7)"],"steps":[3,6]},{"t":5005,"n":"Leopard","q":"legendary","i":"./assets/masks/5005-leopard.webp","x":"Manticore","s":[[8,11],[12,16],[12,16],[16,21],[20,26],[20,26]],"eff":["when this mask attacks \u2192 attack 2\u00d7 more, each hit 55% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 55% of Technique as Pop loss","when this mask attacks \u2192 attack 3\u00d7 more, each hit 40% of Technique as Pop loss","when this mask attacks \u2192 attack 3\u00d7 more, each hit 40% of Technique as Pop loss","when this mask attacks \u2192 attack 3\u00d7 more, each hit 40% of Technique as Pop loss","when this mask attacks \u2192 attack 3\u00d7 more, each hit 50% of Technique as Pop loss"],"steps":[3,6]},{"t":1002,"n":"Thunderbird","q":"epic","i":"./assets/masks/epic/1002-thunderbird.webp","x":"Phoenix","s":[[2,10],[3,15],[3,15],[5,19],[7,23],[7,23]],"eff":["when a called partner joins \u2192 grant +2 Tech / +1 Pop to that partner","when a called partner joins \u2192 grant +2 Tech / +1 Pop to that partner","when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner","when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner","when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner","when a called partner joins \u2192 grant +5 Tech / +4 Pop to that partner"],"steps":[3,6]},{"t":1005,"n":"Double-headed Eagle","q":"epic","i":"./assets/masks/epic/1005-double-headed-eagle.webp","x":"","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when an ally leaves the floor \u2192 summon 1 partner (2 Tech / 1 Pop) (\u22643\u00d7)","when an ally leaves the floor \u2192 summon 1 partner (2 Tech / 1 Pop) (\u22643\u00d7)","when an ally leaves the floor \u2192 summon 1 partner (3 Tech / 2 Pop) (\u22643\u00d7)","when an ally leaves the floor \u2192 summon 1 partner (3 Tech / 2 Pop) (\u22643\u00d7)","when an ally leaves the floor \u2192 summon 1 partner (3 Tech / 2 Pop) (\u22643\u00d7)","when an ally leaves the floor \u2192 summon 1 partner (4 Tech / 3 Pop) (\u22643\u00d7)"],"steps":[3,6]},{"t":1006,"n":"Hippogriff","q":"epic","i":"./assets/masks/epic/1006-hippogriff.webp","x":"","s":[[8,4],[12,6],[12,6],[16,8],[20,10],[20,10]],"eff":["on own death \u2192 summon 2 partners (2 Tech / 2 Pop)","on own death \u2192 summon 2 partners (2 Tech / 2 Pop)","on own death \u2192 summon 2 partners (4 Tech / 3 Pop)","on own death \u2192 summon 2 partners (4 Tech / 3 Pop)","on own death \u2192 summon 2 partners (4 Tech / 3 Pop)","on own death \u2192 summon 2 partners (7 Tech / 5 Pop)"],"steps":[3,6]},{"t":1007,"n":"Owl","q":"epic","i":"./assets/masks/epic/1007-owl.webp","x":"","s":[[8,4],[12,6],[12,6],[16,8],[20,10],[20,10]],"eff":["on own death \u2192 summon 1 partner (4 Tech / 3 Pop) that also debuffs on attack","on own death \u2192 summon 1 partner (4 Tech / 3 Pop) that also debuffs on attack","on own death \u2192 summon 1 partner (7 Tech / 4 Pop) that also debuffs on attack","on own death \u2192 summon 1 partner (7 Tech / 4 Pop) that also debuffs on attack","on own death \u2192 summon 1 partner (7 Tech / 4 Pop) that also debuffs on attack","on own death \u2192 summon 1 partner (11 Tech / 6 Pop) that also debuffs on attack"],"steps":[3,6]},{"t":1102,"n":"Wild Boar","q":"epic","i":"./assets/masks/epic/1102-wild-boar.webp","x":"Cerberus","s":[[5,7],[7,11],[7,11],[8,16],[10,20],[10,20]],"eff":["when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +2 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +3 Tech / +1 Pop to self"],"steps":[3,6]},{"t":1105,"n":"Cursed Toad","q":"epic","i":"./assets/masks/epic/1105-cursed-toad.webp","x":"Angel","s":[[5,7],[7,11],[7,11],[10,14],[13,17],[13,17]],"eff":["when an ally's Pop is reduced \u2192 grant +1 Tech / +1 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +1 Tech / +1 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +1 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +1 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +1 Tech / +2 Pop to that ally (\u22645\u00d7)","when an ally's Pop is reduced \u2192 grant +2 Tech / +2 Pop to that ally (\u22645\u00d7)"],"steps":[3,6]},{"t":2002,"n":"Lion","q":"epic","i":"./assets/masks/epic/2002-lion.webp","x":"Demon","s":[[6,6],[10,8],[10,8],[13,11],[16,14],[16,14]],"eff":["when an ally leaves the floor \u2192 \u22122 Pop to a random enemy","when an ally leaves the floor \u2192 \u22122 Pop to a random enemy","when an ally leaves the floor \u2192 \u22123 Pop to a random enemy","when an ally leaves the floor \u2192 \u22123 Pop to a random enemy","when an ally leaves the floor \u2192 \u22123 Pop to a random enemy","when an ally leaves the floor \u2192 \u22124 Pop to a random enemy"],"steps":[3,6]},{"t":2003,"n":"Shark","q":"epic","i":"./assets/masks/epic/2003-shark.webp","x":"","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +2 Pop to self","when an ally leaves the floor \u2192 grant +1 Tech / +3 Pop to self"],"steps":[3,6]},{"t":2004,"n":"Ghost","q":"epic","i":"./assets/masks/epic/2004-ghost.webp","x":"","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["at battle start \u2192 the ally on the left rests, then returns wearing a Lv.1 mask","at battle start \u2192 the ally on the left rests, then returns wearing a Lv.1 mask","at battle start \u2192 the ally on the left rests, then returns wearing a Lv.3 mask","at battle start \u2192 the ally on the left rests, then returns wearing a Lv.3 mask","at battle start \u2192 the ally on the left rests, then returns wearing a Lv.3 mask","at battle start \u2192 the ally on the left rests, then returns wearing a Lv.6 mask"],"steps":[3,6]},{"t":2007,"n":"Golden Apple","q":"epic","i":"./assets/masks/epic/2007-golden-apple.webp","x":"","s":[[6,6],[10,8],[10,8],[13,11],[16,14],[16,14]],"eff":["when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)","when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)","when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)","when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)","when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)","when an ally's leave-floor skill fires \u2192 re-trigger that skill once (\u22641\u00d7, no summons)"],"steps":[3,6]},{"t":2008,"n":"Gargoyle","q":"epic","i":"./assets/masks/epic/2008-gargoyle.webp","x":"Anubis","s":[[8,4],[12,6],[12,6],[16,8],[20,10],[20,10]],"eff":["on own death \u2192 grant +1 Tech / +1 Pop to all other allies","on own death \u2192 grant +1 Tech / +1 Pop to all other allies","on own death \u2192 grant +2 Tech / +1 Pop to all other allies","on own death \u2192 grant +2 Tech / +1 Pop to all other allies","on own death \u2192 grant +2 Tech / +1 Pop to all other allies","on own death \u2192 grant +3 Tech / +2 Pop to all other allies"],"steps":[3,6]},{"t":3002,"n":"Blackbear","q":"epic","i":"./assets/masks/epic/3002-blackbear.webp","x":"Ebon Dragon","s":[[5,3],[9,6],[9,6],[13,10],[15,14],[15,14]],"eff":["at battle start \u2192 deal 30% of Technique to 2 random enemies","at battle start \u2192 deal 30% of Technique to 2 random enemies","at battle start \u2192 deal 35% of Technique to 2 random enemies","at battle start \u2192 deal 35% of Technique to 2 random enemies","at battle start \u2192 deal 35% of Technique to 2 random enemies","at battle start \u2192 deal 45% of Technique to 2 random enemies"],"steps":[3,6]},{"t":3003,"n":"Elephant","q":"epic","i":"./assets/masks/epic/3003-elephant.webp","x":"","s":[[4,4],[7,8],[7,8],[10,11],[13,14],[13,14]],"eff":["at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 2\u00d7","at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 2\u00d7","at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 3\u00d7","at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 3\u00d7","at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 3\u00d7","at battle start \u2192 \u22123 Pop to the lowest-Pop enemy, 5\u00d7"],"steps":[3,6]},{"t":3009,"n":"Buffalo","q":"epic","i":"./assets/masks/epic/3009-buffalo.webp","x":"","s":[[6,6],[10,8],[10,8],[13,11],[16,14],[16,14]],"eff":["at battle start \u2192 \u22124 Pop to the rear-most enemy","at battle start \u2192 \u22124 Pop to the rear-most enemy","at battle start \u2192 \u22127 Pop to the rear-most enemy","at battle start \u2192 \u22127 Pop to the rear-most enemy","at battle start \u2192 \u22127 Pop to the rear-most enemy","at battle start \u2192 \u221211 Pop to the rear-most enemy"],"steps":[3,6]},{"t":3010,"n":"Merman","q":"epic","i":"./assets/masks/epic/3010-merman.webp","x":"Kraken","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when an enemy dies \u2192 \u22122 Pop to a random enemy","when an enemy dies \u2192 \u22122 Pop to a random enemy","when an enemy dies \u2192 \u22123 Pop to a random enemy","when an enemy dies \u2192 \u22123 Pop to a random enemy","when an enemy dies \u2192 \u22123 Pop to a random enemy","when an enemy dies \u2192 \u22125 Pop to a random enemy"],"steps":[3,6]},{"t":4001,"n":"Black Widow","q":"epic","i":"./assets/masks/epic/4001-black-widow.webp","x":"","s":[[6,6],[10,8],[10,8],[13,11],[16,14],[16,14]],"eff":["before each dance-off \u2192 \u22121 Pop to the next ally on the right (once)","before each dance-off \u2192 \u22121 Pop to the next ally on the right (once)","before each dance-off \u2192 \u22121 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22121 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22121 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22121 Pop to the next ally on the right, 3\u00d7"],"steps":[3,6]},{"t":4004,"n":"Pegasus","q":"epic","i":"./assets/masks/epic/4004-pegasus.webp","x":"Sphinx","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when own Pop is reduced \u2192 grant +1 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +1 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +2 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +2 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +2 Tech / +2 Pop to the next ally on the right","when own Pop is reduced \u2192 grant +3 Tech / +3 Pop to the next ally on the right"],"steps":[3,6]},{"t":4007,"n":"Tiger","q":"epic","i":"./assets/masks/epic/4007-tiger.webp","x":"Frost Giant","s":[[5,7],[8,10],[8,10],[11,13],[14,16],[14,16]],"eff":["when an ally reduces an enemy to 0 Pop \u2192 \u22124 Pop to the front enemy","when an ally reduces an enemy to 0 Pop \u2192 \u22124 Pop to the front enemy","when an ally reduces an enemy to 0 Pop \u2192 \u22127 Pop to the front enemy","when an ally reduces an enemy to 0 Pop \u2192 \u22127 Pop to the front enemy","when an ally reduces an enemy to 0 Pop \u2192 \u22127 Pop to the front enemy","when an ally reduces an enemy to 0 Pop \u2192 \u221210 Pop to the front enemy"],"steps":[3,6]},{"t":4008,"n":"Troll","q":"epic","i":"./assets/masks/epic/4008-troll.webp","x":"","s":[[5,7],[8,10],[8,10],[11,13],[14,16],[14,16]],"eff":["when this mask reduces an enemy to 0 Pop \u2192 grant +2 Tech / +3 Pop to self","when this mask reduces an enemy to 0 Pop \u2192 grant +2 Tech / +3 Pop to self","when this mask reduces an enemy to 0 Pop \u2192 grant +3 Tech / +5 Pop to self","when this mask reduces an enemy to 0 Pop \u2192 grant +3 Tech / +5 Pop to self","when this mask reduces an enemy to 0 Pop \u2192 grant +3 Tech / +5 Pop to self","when this mask reduces an enemy to 0 Pop \u2192 grant +5 Tech / +6 Pop to self"],"steps":[3,6]},{"t":4102,"n":"Man-eater","q":"epic","i":"./assets/masks/epic/4102-man-eater.webp","x":"Fenrir","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when own Pop is reduced \u2192 \u22122 Pop to a random enemy","when own Pop is reduced \u2192 \u22122 Pop to a random enemy","when own Pop is reduced \u2192 \u22123 Pop to a random enemy","when own Pop is reduced \u2192 \u22123 Pop to a random enemy","when own Pop is reduced \u2192 \u22123 Pop to a random enemy","when own Pop is reduced \u2192 \u22124 Pop to a random enemy"],"steps":[3,6]},{"t":4104,"n":"Zebra","q":"epic","i":"./assets/masks/epic/4104-zebra.webp","x":"Basilisk","s":[[5,7],[8,10],[8,10],[11,13],[14,16],[14,16]],"eff":["when the ally in front loses Pop \u2192 \u22121 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22121 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22122 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22122 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22122 Pop to a random enemy","when the ally in front loses Pop \u2192 \u22123 Pop to a random enemy"],"steps":[3,6]},{"t":4105,"n":"Whale","q":"epic","i":"./assets/masks/epic/4105-whale.webp","x":"","s":[[6,6],[10,8],[10,8],[13,11],[16,14],[16,14]],"eff":["at battle start \u2192 apply Anxiety (+2 dmg taken, \u00d73) to 2 random enemies","at battle start \u2192 apply Anxiety (+2 dmg taken, \u00d73) to 2 random enemies","at battle start \u2192 apply Anxiety (+3 dmg taken, \u00d73) to 2 random enemies","at battle start \u2192 apply Anxiety (+3 dmg taken, \u00d73) to 2 random enemies","at battle start \u2192 apply Anxiety (+3 dmg taken, \u00d73) to 2 random enemies","at battle start \u2192 apply Anxiety (+3 dmg taken, \u00d73) to 3 random enemies"],"steps":[3,6]},{"t":5002,"n":"Evil Specter","q":"epic","i":"./assets/masks/epic/5002-evil-specter.webp","x":"Flame Giant","s":[[5,7],[8,10],[8,10],[11,13],[14,16],[14,16]],"eff":["when an ally acts / an enemy dies \u2192 \u22122 Pop to 2 random enemies (\u22646\u00d7)","when an ally acts / an enemy dies \u2192 \u22122 Pop to 2 random enemies (\u22646\u00d7)","when an ally acts / an enemy dies \u2192 \u22123 Pop to 2 random enemies (\u22646\u00d7)","when an ally acts / an enemy dies \u2192 \u22123 Pop to 2 random enemies (\u22646\u00d7)","when an ally acts / an enemy dies \u2192 \u22123 Pop to 2 random enemies (\u22646\u00d7)","when an ally acts / an enemy dies \u2192 \u22124 Pop to 2 random enemies (\u22646\u00d7)"],"steps":[3,6]},{"t":5004,"n":"Snow Dragon","q":"epic","i":"./assets/masks/epic/5004-snow-dragon.webp","x":"","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when own Pop is reduced \u2192 40% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)","when own Pop is reduced \u2192 40% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)","when own Pop is reduced \u2192 70% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)","when own Pop is reduced \u2192 70% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)","when own Pop is reduced \u2192 70% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)","when own Pop is reduced \u2192 100% chance to gain Partner Protection (blocks 1 hit) (\u22643\u00d7)"],"steps":[3,6]},{"t":5006,"n":"Manticore","q":"epic","i":"./assets/masks/epic/5006-manticore.webp","x":"Leopard","s":[[4,8],[6,12],[6,12],[8,16],[10,20],[10,20]],"eff":["when this mask attacks \u2192 attack 2\u00d7 more, each hit 50% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 50% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 60% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 60% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 60% of Technique as Pop loss","when this mask attacks \u2192 attack 2\u00d7 more, each hit 70% of Technique as Pop loss"],"steps":[3,6]},{"t":5007,"n":"Goblin King","q":"epic","i":"./assets/masks/epic/5007-goblin-king.webp","x":"","s":[[5,7],[8,10],[8,10],[11,13],[14,16],[14,16]],"eff":["before an ally's dance-off \u2192 apply Anxiety (+2 dmg taken, \u00d73) to that ally's target","before an ally's dance-off \u2192 apply Anxiety (+2 dmg taken, \u00d73) to that ally's target","before an ally's dance-off \u2192 apply Anxiety (+3 dmg taken, \u00d73) to that ally's target","before an ally's dance-off \u2192 apply Anxiety (+3 dmg taken, \u00d73) to that ally's target","before an ally's dance-off \u2192 apply Anxiety (+3 dmg taken, \u00d73) to that ally's target","before an ally's dance-off \u2192 apply Anxiety (+5 dmg taken, \u00d73) to that ally's target"],"steps":[3,6]},{"t":1003,"n":"Gallic Rooster","q":"rare","i":"./assets/masks/rare/1003-gallic-rooster.webp","x":"","s":[[1,8],[2,11],[2,11],[3,14],[4,17],[4,17]],"eff":["when a called partner joins \u2192 grant +1 Tech / +0 Pop to that partner","when a called partner joins \u2192 grant +1 Tech / +0 Pop to that partner","when a called partner joins \u2192 grant +1 Tech / +1 Pop to that partner","when a called partner joins \u2192 grant +1 Tech / +1 Pop to that partner","when a called partner joins \u2192 grant +1 Tech / +1 Pop to that partner","when a called partner joins \u2192 grant +3 Tech / +2 Pop to that partner"],"steps":[3,6]},{"t":1008,"n":"Penguin","q":"rare","i":"./assets/masks/rare/1008-penguin.webp","x":"","s":[[3,6],[4,9],[4,9],[5,12],[6,15],[6,15]],"eff":["when own Pop is reduced \u2192 summon 1 partner (2 Tech / 1 Pop)","when own Pop is reduced \u2192 summon 1 partner (2 Tech / 1 Pop)","when own Pop is reduced \u2192 summon 1 partner (3 Tech / 2 Pop)","when own Pop is reduced \u2192 summon 1 partner (3 Tech / 2 Pop)","when own Pop is reduced \u2192 summon 1 partner (3 Tech / 2 Pop)","when own Pop is reduced \u2192 summon 1 partner (5 Tech / 4 Pop)"],"steps":[3,6]},{"t":1009,"n":"Chameleon","q":"rare","i":"./assets/masks/rare/1009-chameleon.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["on own death \u2192 summon 2 partners (2 Tech / 1 Pop)","on own death \u2192 summon 2 partners (2 Tech / 1 Pop)","on own death \u2192 summon 2 partners (2 Tech / 2 Pop)","on own death \u2192 summon 2 partners (2 Tech / 2 Pop)","on own death \u2192 summon 2 partners (2 Tech / 2 Pop)","on own death \u2192 summon 2 partners (4 Tech / 3 Pop)"],"steps":[3,6]},{"t":1103,"n":"Sea Lion","q":"rare","i":"./assets/masks/rare/1103-sea-lion.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when an ally summons a partner \u2192 grant +1 Tech / +0 Pop to self","when an ally summons a partner \u2192 grant +1 Tech / +0 Pop to self","when an ally summons a partner \u2192 grant +2 Tech / +0 Pop to self","when an ally summons a partner \u2192 grant +2 Tech / +0 Pop to self","when an ally summons a partner \u2192 grant +2 Tech / +0 Pop to self","when an ally summons a partner \u2192 grant +3 Tech / +1 Pop to self"],"steps":[3,6]},{"t":1106,"n":"Butterfly","q":"rare","i":"./assets/masks/rare/1106-butterfly.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["when the front-first ally loses Pop \u2192 grant +0 Tech / +1 Pop to that ally","when the front-first ally loses Pop \u2192 grant +0 Tech / +1 Pop to that ally","when the front-first ally loses Pop \u2192 grant +0 Tech / +2 Pop to that ally","when the front-first ally loses Pop \u2192 grant +0 Tech / +2 Pop to that ally","when the front-first ally loses Pop \u2192 grant +0 Tech / +2 Pop to that ally","when the front-first ally loses Pop \u2192 grant +1 Tech / +3 Pop to that ally"],"steps":[3,6]},{"t":2005,"n":"Dragonfly","q":"rare","i":"./assets/masks/rare/2005-dragonfly.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["on own death \u2192 return to the floor with 40% of this mask's stats","on own death \u2192 return to the floor with 40% of this mask's stats","on own death \u2192 return to the floor with 50% of this mask's stats","on own death \u2192 return to the floor with 50% of this mask's stats","on own death \u2192 return to the floor with 50% of this mask's stats","on own death \u2192 return to the floor with 60% of this mask's stats"],"steps":[3,6]},{"t":2009,"n":"Sheep","q":"rare","i":"./assets/masks/rare/2009-sheep.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when an ally leaves the floor \u2192 grant +0 Tech / +1 Pop to a random ally","when an ally leaves the floor \u2192 grant +0 Tech / +1 Pop to a random ally","when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to a random ally","when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to a random ally","when an ally leaves the floor \u2192 grant +1 Tech / +1 Pop to a random ally","when an ally leaves the floor \u2192 grant +2 Tech / +1 Pop to a random ally"],"steps":[3,6]},{"t":2010,"n":"Parrot","q":"rare","i":"./assets/masks/rare/2010-parrot.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["on own death \u2192 grant +1 Tech / +1 Pop to the next 2 allies on the right","on own death \u2192 grant +1 Tech / +1 Pop to the next 2 allies on the right","on own death \u2192 grant +2 Tech / +1 Pop to the next 2 allies on the right","on own death \u2192 grant +2 Tech / +1 Pop to the next 2 allies on the right","on own death \u2192 grant +2 Tech / +1 Pop to the next 2 allies on the right","on own death \u2192 grant +3 Tech / +3 Pop to the next 2 allies on the right"],"steps":[3,6]},{"t":2011,"n":"Turtle","q":"rare","i":"./assets/masks/rare/2011-turtle.webp","x":"","s":[[2,7],[3,10],[3,10],[4,13],[5,16],[5,16]],"eff":["on own death \u2192 grant Partner Protection (blocks 1 hit) to the next ally on the right","on own death \u2192 grant Partner Protection (blocks 1 hit) to the next ally on the right","on own death \u2192 grant Partner Protection (blocks 1 hit) to the next 2 allies on the right","on own death \u2192 grant Partner Protection (blocks 1 hit) to the next 2 allies on the right","on own death \u2192 grant Partner Protection (blocks 1 hit) to the next 2 allies on the right","on own death \u2192 grant Partner Protection (blocks 1 hit) to the next 3 allies on the right"],"steps":[3,6]},{"t":3004,"n":"Kitten","q":"rare","i":"./assets/masks/rare/3004-kitten.webp","x":"","s":[[4,3],[7,4],[7,4],[9,6],[11,8],[11,8]],"eff":["at battle start \u2192 steal Pop: 30% of Technique from 2 highest-Pop enemies","at battle start \u2192 steal Pop: 30% of Technique from 2 highest-Pop enemies","at battle start \u2192 steal Pop: 35% of Technique from 2 highest-Pop enemies","at battle start \u2192 steal Pop: 35% of Technique from 2 highest-Pop enemies","at battle start \u2192 steal Pop: 35% of Technique from 2 highest-Pop enemies","at battle start \u2192 steal Pop: 40% of Technique from 2 highest-Pop enemies"],"steps":[3,6]},{"t":3005,"n":"Fox","q":"rare","i":"./assets/masks/rare/3005-fox.webp","x":"","s":[[4,3],[6,5],[6,5],[8,7],[10,9],[10,9]],"eff":["at battle start \u2192 \u221220% of their Pop from 2 highest-Pop enemies","at battle start \u2192 \u221220% of their Pop from 2 highest-Pop enemies","at battle start \u2192 \u221225% of their Pop from 2 highest-Pop enemies","at battle start \u2192 \u221225% of their Pop from 2 highest-Pop enemies","at battle start \u2192 \u221225% of their Pop from 2 highest-Pop enemies","at battle start \u2192 \u221230% of their Pop from 2 highest-Pop enemies"],"steps":[3,6]},{"t":3006,"n":"Bumblebee","q":"rare","i":"./assets/masks/rare/3006-bumblebee.webp","x":"","s":[[4,3],[7,4],[7,4],[9,6],[11,8],[11,8]],"eff":["at battle start \u2192 \u22122 Pop to 2 random enemies","at battle start \u2192 \u22122 Pop to 2 random enemies","at battle start \u2192 \u22123 Pop to 2 random enemies","at battle start \u2192 \u22123 Pop to 2 random enemies","at battle start \u2192 \u22123 Pop to 2 random enemies","at battle start \u2192 \u22124 Pop to 2 random enemies"],"steps":[3,6]},{"t":3008,"n":"Pufferfish","q":"rare","i":"./assets/masks/rare/3008-pufferfish.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["before each dance-off \u2192 grant +1 Tech / +1 Pop to self","before each dance-off \u2192 grant +1 Tech / +1 Pop to self","before each dance-off \u2192 grant +2 Tech / +2 Pop to self","before each dance-off \u2192 grant +2 Tech / +2 Pop to self","before each dance-off \u2192 grant +2 Tech / +2 Pop to self","before each dance-off \u2192 grant +3 Tech / +3 Pop to self"],"steps":[3,6]},{"t":3011,"n":"Raccoon","q":"rare","i":"./assets/masks/rare/3011-raccoon.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when an enemy dies \u2192 apply Anxiety (+1 dmg taken, \u00d73) to 4 enemies","when an enemy dies \u2192 apply Anxiety (+1 dmg taken, \u00d73) to 4 enemies","when an enemy dies \u2192 apply Anxiety (+2 dmg taken, \u00d73) to 4 enemies","when an enemy dies \u2192 apply Anxiety (+2 dmg taken, \u00d73) to 4 enemies","when an enemy dies \u2192 apply Anxiety (+2 dmg taken, \u00d73) to 4 enemies","when an enemy dies \u2192 apply Anxiety (+3 dmg taken, \u00d73) to 4 enemies"],"steps":[3,6]},{"t":4002,"n":"Monkey","q":"rare","i":"./assets/masks/rare/4002-monkey.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["before each dance-off \u2192 \u22122 Pop to the next ally on the right (once)","before each dance-off \u2192 \u22122 Pop to the next ally on the right (once)","before each dance-off \u2192 \u22122 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22122 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22122 Pop to the next ally on the right, 2\u00d7","before each dance-off \u2192 \u22122 Pop to the next ally on the right, 3\u00d7"],"steps":[3,6]},{"t":4005,"n":"Clownfish","q":"rare","i":"./assets/masks/rare/4005-clownfish.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when own Pop drops or on death \u2192 grant +0 Tech / +1 Pop to the lowest-Pop ally","when own Pop drops or on death \u2192 grant +0 Tech / +1 Pop to the lowest-Pop ally","when own Pop drops or on death \u2192 grant +0 Tech / +2 Pop to the lowest-Pop ally","when own Pop drops or on death \u2192 grant +0 Tech / +2 Pop to the lowest-Pop ally","when own Pop drops or on death \u2192 grant +0 Tech / +2 Pop to the lowest-Pop ally","when own Pop drops or on death \u2192 grant +0 Tech / +3 Pop to the lowest-Pop ally"],"steps":[3,6]},{"t":4009,"n":"Toxic Mushroom","q":"rare","i":"./assets/masks/rare/4009-toxic-mushroom.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["before each dance-off \u2192 \u22122 Pop to 1 random enemy","before each dance-off \u2192 \u22122 Pop to 1 random enemy","before each dance-off \u2192 \u22122 Pop to 2 random enemies","before each dance-off \u2192 \u22122 Pop to 2 random enemies","before each dance-off \u2192 \u22122 Pop to 2 random enemies","before each dance-off \u2192 \u22124 Pop to 2 random enemies"],"steps":[3,6]},{"t":4010,"n":"Hedgehog","q":"rare","i":"./assets/masks/rare/4010-hedgehog.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when own Pop is reduced \u2192 grant +0 Tech / +1 Pop to self","when own Pop is reduced \u2192 grant +0 Tech / +1 Pop to self","when own Pop is reduced \u2192 grant +0 Tech / +2 Pop to self","when own Pop is reduced \u2192 grant +0 Tech / +2 Pop to self","when own Pop is reduced \u2192 grant +0 Tech / +2 Pop to self","when own Pop is reduced \u2192 grant +1 Tech / +3 Pop to self"],"steps":[3,6]},{"t":5003,"n":"Shell","q":"rare","i":"./assets/masks/rare/5003-shell.webp","x":"","s":[[6,3],[8,5],[8,5],[10,7],[12,9],[12,9]],"eff":["when the ally on the left acts \u2192 grant +1 Tech / +0 Pop to self (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +0 Pop to self (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to self (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to self (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to self (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +2 Pop to self (\u22646\u00d7)"],"steps":[3,6]},{"t":5008,"n":"Rabbit","q":"rare","i":"./assets/masks/rare/5008-rabbit.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when the ally on the left acts \u2192 grant +1 Tech / +0 Pop to that ally (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +0 Pop to that ally (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to that ally (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to that ally (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +1 Pop to that ally (\u22646\u00d7)","when the ally on the left acts \u2192 grant +1 Tech / +2 Pop to that ally (\u22646\u00d7)"],"steps":[3,6]},{"t":5009,"n":"Jellyfish","q":"rare","i":"./assets/masks/rare/5009-jellyfish.webp","x":"","s":[[3,6],[5,8],[5,8],[7,10],[9,12],[9,12]],"eff":["when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 1 (\u22646\u00d7)","when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 1 (\u22646\u00d7)","when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 2 (\u22646\u00d7)","when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 2 (\u22646\u00d7)","when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 2 (\u22646\u00d7)","when the ally behind reduces an enemy's Pop \u2192 reduce it by a further 3 (\u22646\u00d7)"],"steps":[3,6]}];
+const grid = document.getElementById('grid');
+
+MASKS.forEach(m=>{
+  const c = document.createElement('div');
+  c.className = 'mcard'; c.id = 'm' + m.t; c.dataset.q = m.q; c.dataset.n = m.n.toLowerCase();
+  const lvBtns = [1,2,3,4,5,6].map(lv=>
+    `<button data-lv="${lv}"${m.steps.includes(lv)?' class="step"':''}>L${lv}</button>`).join('');
+  c.innerHTML =
+      `<div class="mcard-hd"><img src="${m.i}" alt=""><div>`
+    + `<div class="mcard-nm">${m.n}</div>`
+    + `<div class="mcard-tag">${m.q}${m.x?` &nbsp;·&nbsp; <span class="mcard-x">conflicts ${m.x}</span>`:''}</div>`
+    + `</div></div>`
+    + `<div class="mk-lv">${lvBtns}</div>`
+    + `<div class="mcard-stat"></div><div class="mcard-eff"></div>`
+    + (m.steps.length?`<div class="mcard-note">skill upgrades at ${m.steps.map(s=>'L'+s).join(', ')}</div>`:'');
+  const statEl = c.querySelector('.mcard-stat'), effEl = c.querySelector('.mcard-eff');
+  const btns = [...c.querySelectorAll('.mk-lv button')];
+  function setLv(lv){
+    btns.forEach(b=> b.classList.toggle('on', +b.dataset.lv===lv));
+    statEl.textContent = `Technique ${m.s[lv-1][0]} · Popularity ${m.s[lv-1][1]}`;
+    effEl.textContent = m.eff[lv-1];
+  }
+  btns.forEach(b=> b.onclick = ()=> setLv(+b.dataset.lv));
+  c.setLv = setLv; setLv(6);
+  grid.appendChild(c);
+});
+
+document.getElementById('q').addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  [...grid.children].forEach(c=> c.classList.toggle('hide', q && !c.dataset.n.includes(q)));
+});
+document.getElementById('rar').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  [...e.currentTarget.querySelectorAll('button')].forEach(x=> x.classList.toggle('on', x===b));
+  const q = b.dataset.q;
+  [...grid.children].forEach(c=> c.style.display = (q==='all'||c.dataset.q===q) ? '' : 'none');
+});
+document.getElementById('glv').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  const lv = +b.dataset.lv;
+  [...grid.children].forEach(c=> c.setLv(lv));
+});
+</script>
+</body>
+</html>
