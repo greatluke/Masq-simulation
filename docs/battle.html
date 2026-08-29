@@ -1832,9 +1832,13 @@ function noise(duration=.09,gain=.045){
   const n=Math.ceil(c.sampleRate*duration),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
   const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=b;f.type='lowpass';f.frequency.value=900;g.gain.setValueAtTime(gain,c.currentTime);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+duration);s.connect(f);f.connect(g);g.connect(audioMaster);s.start();
 }
+function impact(double=false){
+  tone(210,.085,'square',.115,0,82);tone(88,.18,'sine',.13,.008,48);noise(.1,.075);
+  if(double){tone(255,.085,'square',.085,.045,96);tone(105,.17,'sine',.095,.05,52);noise(.11,.05);}
+}
 function soundCue(kind,result){
   if(!soundOn)return;
-  if(kind==='hit'||kind==='exchange'){tone(145,.13,'triangle',.085,0,62);noise(.08,.035);if(kind==='exchange')tone(185,.11,'triangle',.06,.025,76);}
+  if(kind==='hit'||kind==='exchange')impact(kind==='exchange');
   else if(kind==='skill'){tone(410,.2,'sine',.045);tone(615,.25,'sine',.04,.07);}
   else if(kind==='buff'){tone(440,.16,'sine',.05);tone(660,.2,'sine',.045,.08);tone(880,.22,'sine',.035,.16);}
   else if(kind==='anxiety'){tone(190,.38,'sawtooth',.035,0,118);tone(245,.32,'triangle',.025,.04,155);}
