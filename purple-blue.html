@@ -11,6 +11,7 @@
   --ink: #241d2e; --ink-soft: #4b4256; --mute: #877d92;
   --line: #e5ddd1; --bar-track: #ece4da;
   --chip: #fff; --chip-on: color-mix(in srgb, var(--accent) 16%, #fff);
+  --bad: #b23b32; --chip-ex: color-mix(in srgb, #b23b32 12%, #fff);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -18,6 +19,7 @@
     --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
     --line: #342b41; --bar-track: #2c2439;
     --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
+    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31);
   }
 }
 :root[data-theme="dark"] {
@@ -25,6 +27,7 @@
   --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
   --line: #342b41; --bar-track: #2c2439;
   --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
+  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31);
 }
 body {
   margin: 0; background: var(--ground); color: var(--ink);
@@ -59,11 +62,21 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: .4rem; }
 .chip { display: flex; align-items: center; gap: .5rem; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 10px; background: var(--chip); cursor: pointer; font: inherit; font-size: .82rem; text-align: left; color: var(--ink); }
 .chip:hover { border-color: var(--accent); }
-.chip[aria-pressed="true"] { background: var(--chip-on); border-color: var(--accent); font-weight: 600; }
+.chip[data-state="in"] { background: var(--chip-on); border-color: var(--accent); font-weight: 600; }
+.chip[data-state="ex"] { background: var(--chip-ex); border-color: var(--bad); }
+.chip[data-state="ex"] .cn { text-decoration: line-through; opacity: .7; }
 .chip img { width: 30px; height: 30px; border-radius: 7px; flex: none; background: var(--paper-2); }
+.chip[data-state="ex"] img { filter: grayscale(1) opacity(.55); }
 .chip .cn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chip .cs { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: .68rem; color: var(--mute); flex: none; }
+.chip .mk { flex: none; width: 1.1em; text-align: center; font-weight: 700; font-family: "IBM Plex Mono", monospace; }
+.chip[data-state="in"] .mk { color: var(--accent); }
+.chip[data-state="ex"] .mk { color: var(--bad); }
+.chip .cs { font-family: "IBM Plex Mono", monospace; font-size: .68rem; color: var(--mute); flex: none; }
 .chip:disabled { opacity: .4; cursor: not-allowed; }
+.flegend { display: flex; gap: 1rem; font-size: .78rem; color: var(--mute); margin: .1rem 0 .7rem; }
+.flegend b { font-family: "IBM Plex Mono", monospace; }
+.flegend .i { color: var(--accent); }
+.flegend .e { color: var(--bad); }
 
 /* list */
 .list-head, .row { display: grid; grid-template-columns: 3rem 6.2rem 1fr; gap: 1rem; align-items: center; }
@@ -113,12 +126,14 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 
   <div class="filter">
     <div class="filter-top">
-      <h2>Filter by masks</h2>
+      <h2>Filter</h2>
       <span class="filter-status" id="status"></span>
       <button class="filter-clear" id="clear" type="button">clear</button>
     </div>
-    <p class="note" style="margin:.1rem 0 .8rem">Pick up to <strong>5</strong> masks you want in the lineup. The list shows
-    only ranked teams that contain <em>all</em> of them — best 100 shown. <span id="hint"></span></p>
+    <p class="note" style="margin:.1rem 0 .5rem">Tap a mask to cycle <b style="color:var(--accent)">include</b> &rarr;
+    <b style="color:var(--bad)">exclude</b> &rarr; off. A team shows only if it has <em>every</em> included mask
+    and <em>none</em> of the excluded — best 100 shown. <span id="hint"></span></p>
+    <div class="flegend"><span><b class="i">+</b> include &nbsp;(max 5)</span><span><b class="e">&minus;</b> exclude</span></div>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -138,7 +153,8 @@ const POOL = {"1005":{"n":"Double-headed Eagle","i":"data:image/webp;base64,UklG
 const TEAMS = [[9059,2011,3009,3003,3011,5002],[8938,2011,3011,3009,5002,3003],[8799,3009,2011,3003,3011,3010],[8782,3009,2011,3003,5002,3010],[8492,2011,3011,1105,5002,3010],[8388,3009,2011,3003,5007,3010],[8284,5006,3009,3003,3011,5002],[8130,3008,2011,3011,3010,5002],[8069,3009,2011,3003,2002,3010],[8065,4009,3011,3009,3003,3010],[7939,3009,3011,4102,3003,3010],[7923,2011,3011,3003,5002,3010],[7884,3009,2011,3003,1105,3010],[7874,3009,3011,3003,2003,5002],[7857,3002,5006,3011,5002,3010],[7840,3009,3003,2011,5007,5002],[7833,3009,3003,3011,2003,5002],[7805,4105,2011,3011,5002,3010],[7789,2011,3009,5009,5002,3003],[7739,3009,2011,3003,1102,3010],[7712,3009,3011,5006,5002,3003],[7698,3009,2011,3003,4105,3010],[7665,3009,3011,3003,1005,3010],[7636,2011,3009,5009,5002,3010],[7633,3009,3003,2011,5007,3010],[7609,3009,2011,3003,4104,3010],[7585,5004,3009,3003,3011,5002],[7575,3002,3003,2002,3011,3010],[7548,3009,2011,3003,1007,3010],[7546,3009,3011,3003,3010,1005],[7512,3009,2011,3003,2003,3010],[7470,3009,2011,2010,3003,3010],[7458,3002,3003,3010,3011,5002],[7410,3002,2011,5007,5002,3003],[7409,4102,3009,3003,3011,5002],[7402,2011,3009,5006,3003,5002],[7387,2008,2010,5004,2007,5002],[7378,3009,3011,3003,1105,5002],[7376,3003,2011,4105,3010,5002],[7353,2011,3003,3010,5007,5002],[7330,3009,2005,3003,3011,3010],[7321,3009,3011,2005,3003,5002],[7320,3008,2011,3011,1105,5002],[7286,5004,2011,1105,5002,3010],[7271,4004,2011,1105,5007,5002],[7262,3008,3009,3003,3011,5002],[7253,2011,3009,3003,5002,1102],[7224,2011,4105,5006,5002,3010],[7221,3009,2011,3003,3002,3010],[7188,4007,3009,3011,5002,3003],[7184,3009,2005,3003,3011,5002],[7164,3008,2011,5006,5002,3011],[7157,3002,2011,3010,3011,5002],[7156,3009,2011,3003,1005,5002],[7156,2011,3011,1105,2002,3010],[7134,3002,2011,3010,3003,5002],[7131,2011,3011,3003,5002,4104],[7123,2005,3009,3003,3011,5002],[7101,4007,3009,3003,3011,5002],[7099,3008,2011,1105,5002,3011],[7055,2008,2011,3009,3003,2002],[7054,5004,2011,1105,5007,3010],[7046,2011,3011,3009,5002,3010],[7035,4007,2011,5002,3011,3010],[7034,2008,5006,2011,5002,3011],[7029,1007,3003,3011,5002,3010],[7022,3009,2011,3003,1006,3010],[7018,2010,3011,3009,3003,3010],[6992,2010,2011,4009,2007,3010],[6991,3011,3010,3002,5002,3003],[6978,3002,3003,2011,3011,5002],[6976,2011,2003,3009,3003,5002],[6975,3002,4105,3003,5002,3010],[6961,5004,2011,1105,3011,3010],[6955,3009,2011,3003,1005,3010],[6954,3010,3009,3003,3011,5002],[6946,3009,2005,3003,3011,2002],[6932,3009,3011,3003,5002,2005],[6929,4004,2011,1105,3003,5002],[6922,3009,2011,3003,4007,3010],[6905,4004,3009,3003,3011,5002],[6901,3009,2011,3003,2009,3010],[6898,2011,1105,5006,5002,3010],[6895,2011,3009,3003,1005,3010],[6894,3002,3011,4102,3003,3010],[6891,3009,2003,3011,3003,5002],[6885,3002,4105,3003,2002,3010],[6866,1105,3009,3003,3011,5002],[6866,2011,3011,5006,5002,3010],[6865,3009,2011,3003,3008,3010],[6856,4004,2011,3009,3003,3010],[6846,3008,2011,3011,2002,5002],[6845,3008,3011,1105,4104,3010],[6840,2011,3011,3003,3010,4104],[6835,4004,2011,1105,3011,5002],[6822,2011,3009,3003,5002,2005],[6812,3009,3003,2011,5007,2002],[6800,4105,2011,3010,5002,4104],[6793,3009,3003,4007,3011,5002],[6777,3003,2011,4105,2002,5002]];
 const LVL_MIXED = true;
 const MAXROWS = 100;
-const picked = new Set();
+const MAX_INCLUDE = 5;
+const state = new Map();   // typ(string) -> 'in' | 'ex'
 
 const chipsEl = document.getElementById('chips');
 const listEl  = document.getElementById('list');
@@ -147,42 +163,56 @@ const hintEl = document.getElementById('hint');
 
 Object.entries(POOL).sort((a,b)=> b[1].f - a[1].f).forEach(([typ,info])=>{
   const b = document.createElement('button');
-  b.className = 'chip'; b.type = 'button'; b.dataset.typ = typ; b.setAttribute('aria-pressed','false');
-  b.innerHTML = `<img src="${info.i}" alt=""><span class="cn">${info.n}</span>`
+  b.className = 'chip'; b.type = 'button'; b.dataset.typ = typ; b.dataset.state = '';
+  b.innerHTML = `<span class="mk"></span><img src="${info.i}" alt=""><span class="cn">${info.n}</span>`
     + `<span class="cs">T${info.s[0]}·P${info.s[1]}${LVL_MIXED?(' L'+info.lv):''} · ${info.f}</span>`;
   b.onclick = ()=>{
-    if (picked.has(typ)) picked.delete(typ);
-    else { if (picked.size >= 5) return; picked.add(typ); }
+    const cur = state.get(typ);
+    const nIn = [...state.values()].filter(v=>v==='in').length;
+    if (cur === 'in') state.set(typ,'ex');
+    else if (cur === 'ex') state.delete(typ);
+    else state.set(typ, nIn >= MAX_INCLUDE ? 'ex' : 'in');   // at cap: skip straight to exclude
     render();
   };
   chipsEl.appendChild(b);
 });
 
-document.getElementById('clear').onclick = ()=>{ picked.clear(); render(); };
+document.getElementById('clear').onclick = ()=>{ state.clear(); render(); };
 
 function render(){
-  const want = [...picked];
+  const inc = [], exc = [];
+  for (const [t,v] of state) (v==='in'?inc:exc).push(+t);
+  const nIn = inc.length;
+
   [...chipsEl.children].forEach(c=>{
-    const on = picked.has(c.dataset.typ);
-    c.setAttribute('aria-pressed', on ? 'true':'false');
-    c.disabled = !on && picked.size >= 5;
+    const v = state.get(c.dataset.typ) || '';
+    c.dataset.state = v;
+    c.querySelector('.mk').textContent = v==='in' ? '+' : v==='ex' ? '\u2212' : '';
+    c.title = (v==='' && nIn >= MAX_INCLUDE) ? 'include limit reached — tap to exclude' : '';
   });
+
   const matches = [];
   for (let r = 0; r < TEAMS.length; r++){
-    const row = TEAMS[r], types = row.slice(1);
+    const types = TEAMS[r].slice(1);
     let ok = true;
-    for (const w of want) if (!types.includes(+w)) { ok = false; break; }
+    for (const w of inc) if (!types.includes(w)) { ok = false; break; }
+    if (ok) for (const w of exc) if (types.includes(w)) { ok = false; break; }
     if (ok) matches.push(r);
   }
-  statusEl.textContent = `${matches.length} team${matches.length===1?'':'s'} match`
+
+  const parts = [];
+  if (nIn) parts.push(`${nIn} incl`);
+  if (exc.length) parts.push(`${exc.length} excl`);
+  statusEl.textContent = `${matches.length} team${matches.length===1?'':'s'}`
+    + (parts.length ? ` (${parts.join(', ')})` : '')
     + (matches.length > MAXROWS ? ` · showing ${MAXROWS}` : '');
-  hintEl.textContent = want.length===5 && matches.length===0
-    ? 'No finalist lineup uses exactly those five — try removing one.' : '';
+  hintEl.textContent = (nIn && !matches.length)
+    ? 'No ranked lineup fits — loosen a constraint.' : '';
 
   const frag = document.createDocumentFragment();
   if (!matches.length){
     const e = document.createElement('div'); e.className='empty';
-    e.textContent = want.length ? 'No ranked team contains all selected masks.' : 'No data.';
+    e.textContent = (nIn||exc.length) ? 'No ranked team matches the filter.' : 'No data.';
     frag.appendChild(e);
   }
   matches.slice(0, MAXROWS).forEach(r=>{
@@ -191,7 +221,7 @@ function render(){
     d.className = 'row' + (rank<=3 ? ' top3':'');
     const masks = types.map((typ,i)=>{
       const info = POOL[typ] || {n:typ,i:'',lv:'',s:[0,0]};
-      const sel = picked.has(String(typ)) ? ' sel':'';
+      const sel = state.get(String(typ)) === 'in' ? ' sel':'';
       return `<div class="m${sel}"><span class="slot">${i+1}</span>`
         + `<img src="${info.i}" alt="${info.n}">`
         + `<span class="mn">${info.n}</span>`
