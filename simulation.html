@@ -366,6 +366,7 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
             <div class="pre-menu"></div>
           </div>
           <button data-act="clear" data-side="a" type="button">clear</button>
+          <button data-team-clip="copy" data-side="a" type="button">copy team</button><button data-team-clip="paste" data-side="a" type="button">paste team</button>
         </div>
       </div>
     <div class="team b">
@@ -377,6 +378,7 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
             <div class="pre-menu"></div>
           </div>
           <button data-act="clear" data-side="b" type="button">clear</button>
+          <button data-team-clip="copy" data-side="b" type="button">copy team</button><button data-team-clip="paste" data-side="b" type="button">paste team</button>
         </div>
       </div>
   </div>
@@ -1602,6 +1604,9 @@ function downloadTeam() {
   const blob = new Blob([JSON.stringify({version:1, exportedAt:new Date().toISOString(), ...teamSnapshot()}, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'masquerade-team.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 500);
 }
+async function copyLineup(side) { try { await navigator.clipboard.writeText(JSON.stringify({masqueradeTeam:1,lineup:cleanTeam(team[side])})); teamNotice(`${side==='a'?'Your':'Opponent'} lineup copied.`); } catch (_) { teamNotice('Clipboard access is unavailable.'); } }
+async function pasteLineup(side) { try { const raw=await navigator.clipboard.readText(); const x=JSON.parse(raw), list=Array.isArray(x)?x:x.lineup; if(!Array.isArray(list)) throw Error(); team[side]=cleanTeam(list); held=null; renderTeam(side); teamNotice(`${side==='a'?'Your':'Opponent'} lineup pasted.`); } catch (_) { teamNotice('No compatible team on the clipboard.'); } }
+document.querySelectorAll('[data-team-clip]').forEach(b=>b.addEventListener('click',()=>b.dataset.teamClip==='copy'?copyLineup(b.dataset.side):pasteLineup(b.dataset.side)));
 function teamText() {
   const line = (label, list) => `${label}: ${cleanTeam(list).filter(Boolean).map(s => `${s.type}@${s.level}`).join(' | ') || 'empty'}`;
   return `Masquerade Team v1\n${line('Yours', team.a)}\n${line('Opponent', team.b)}`;
