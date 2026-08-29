@@ -1842,9 +1842,9 @@ const battleOst=new Audio('./assets/sfx/OST_dancing_party.ogg'); battleOst.loop=
 function playOst(){if(!soundOn)return;const p=battleOst.play();if(p&&p.catch)p.catch(()=>{});}
 function stopOst(){battleOst.pause();battleOst.currentTime=0;}
 // Local-only extracted game cues. The public docs build intentionally keeps the synthesized fallback.
-const GAME_CUES={start:'./assets/sfx/hero_prepare_fight.ogg',attack:'./assets/sfx/dancebattle_atk_1.ogg',hit:'./assets/sfx/dancebattle_hit.ogg',exchange:'./assets/sfx/dancebattle_hit.ogg',skill:'./assets/sfx/dancebattle_emission.ogg',buff:'./assets/sfx/dancebattle_buff.ogg',anxiety:'./assets/sfx/dancebattle_debuff.ogg',shield:'./assets/sfx/dancebattle_buff.ogg',ko:'./assets/sfx/dancebattle_explode.ogg',summon:'./assets/sfx/dancebattle_emission.ogg',win:'./assets/sfx/war_victory.ogg',lose:'./assets/sfx/war_defeat.ogg'};
+const GAME_CUES={start:'./assets/sfx/hero_prepare_fight.ogg',attack:'./assets/sfx/dancebattle_atk_1.ogg',hit:'./assets/sfx/dancebattle_hit.ogg',exchange:'./assets/sfx/dancebattle_hit.ogg',skill:'./assets/sfx/dancebattle_emission.ogg',buff:'./assets/sfx/dancebattle_buff.ogg',anxiety:'./assets/sfx/dancebattle_debuff.ogg',shield:'./assets/sfx/dancebattle_buff.ogg',ko:'./assets/sfx/dancebattle_explode.ogg',summon:'./assets/sfx/dancebattle_emission.ogg',win:'./assets/sfx/war_victory.ogg',lose:'./assets/sfx/war_defeat.ogg',partyWin:'./assets/sfx/dancing_party_succeed.ogg',partyLose:'./assets/sfx/dancing_party_failed.ogg'};
 const gameAudio={};
-function playGameCue(kind,result){ const key=kind==='result'?(result===1?'win':'lose'):kind,src=GAME_CUES[key]; if(!src)return false; let a=gameAudio[key]; if(!a){a=new Audio(src);a.preload='auto';gameAudio[key]=a;} a.currentTime=0; const p=a.play(); if(p&&p.catch)p.catch(()=>{}); return true; }
+function playGameCue(kind,result){ const key=kind==='result'?(result===1?'win':'lose'):kind==='party'?(result===1?'partyWin':'partyLose'):kind,src=GAME_CUES[key]; if(!src)return false; let a=gameAudio[key]; if(!a){a=new Audio(src);a.preload='auto';gameAudio[key]=a;} a.currentTime=0; const p=a.play(); if(p&&p.catch)p.catch(()=>{}); return true; }
 function ensureAudio(){
   if(!AudioEngine)return null;
   if(!audioCtx){audioCtx=new AudioEngine();audioMaster=audioCtx.createGain();audioMaster.gain.value=.38;audioMaster.connect(audioCtx.destination);}
@@ -2023,7 +2023,7 @@ function finishBattle(withSound=true) {
   stop(); const r=playback;
   ui.resultTitle.textContent=r.result===1?'Your lineup wins':r.result===2?'Opponent wins':'The floor ends level';
   ui.resultCopy.textContent=r.result===0?'Both lines fall in the same exchange.':`Surviving-body margin ${r.survivorDiff>=0?'+':''}${r.survivorDiff}. Seed ${r.seed}.`;
-  ui.result.classList.add('show'); ui.status.textContent='Battle complete.'; if(withSound)soundCue('result',r.result); updateTransport();
+  ui.result.classList.add('show'); ui.status.textContent='Battle complete.'; if(withSound){soundCue('result',r.result);setTimeout(()=>soundCue('party',r.result),350);} updateTransport();
 }
 function step(animate=true) { if (!playback||eventIndex>=playback.frames.length) { if(playback)finishBattle(animate); return; } applyFrame(playback.frames[eventIndex++],animate); updateTransport(); if(eventIndex>=playback.frames.length) { clearTimeout(finishTimer); finishTimer=setTimeout(()=>finishBattle(animate),animate?550:0); } }
 function schedule() { clearTimeout(timer); if (!playing) return; step(true); if (playing&&eventIndex<playback.frames.length) timer=setTimeout(schedule,+ui.speed.value); }
