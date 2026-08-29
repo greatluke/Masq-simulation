@@ -493,7 +493,7 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
       <button class="watch" id="play" type="button">Play</button>
       <button id="next" type="button" aria-label="Next event">›</button>
       <div class="timeline" id="timeline" aria-label="Battle progress"><i id="timeline-fill"></i></div>
-      <select id="speed" aria-label="Playback speed"><option value="2400">0.25×</option><option value="1200">0.5×</option><option value="600" selected>1×</option><option value="300">2×</option></select>
+      <select id="speed" aria-label="Playback speed"><option value="5600">0.25×</option><option value="2800">0.5×</option><option value="1400" selected>1×</option><option value="700">2×</option></select>
       <span class="stepcount" id="stepcount">0 / 0 events</span>
     </div>
   </section>
@@ -1785,7 +1785,9 @@ function resetStage() {
   eventIndex = 0; updateTransport();
 }
 function pulseToast(html) {
-  ui.toast.classList.remove('show'); ui.toast.innerHTML = html; void ui.toast.offsetWidth; ui.toast.classList.add('show');
+  ui.toast.classList.remove('show'); ui.toast.innerHTML = html;
+  ui.toast.style.animationDuration = `${Math.max(900,+ui.speed.value*.85)}ms`;
+  void ui.toast.offsetWidth; ui.toast.classList.add('show');
 }
 function syncOrder(desc,card) {
   if (!card || !desc.o) return; card.desc.o = desc.o;
