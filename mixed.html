@@ -23,22 +23,22 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
-    --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
-    --line: #342b41; --bar-track: #2c2439;
-    --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
-    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
+    --ground: #0b0d1c; --paper: #18162b; --paper-2: #101426;
+    --ink: #f1eef7; --ink-soft: #c9c5d8; --mute: #948fa6;
+    --line: rgba(174,157,218,.18); --bar-track: #292844;
+    --chip: #1b1931; --chip-on: color-mix(in srgb, var(--accent) 27%, #1b1931);
+    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #1b1931); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #1b1931);
   }
 }
 :root[data-theme="dark"] {
-  --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
-  --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
-  --line: #342b41; --bar-track: #2c2439;
-  --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
-  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
+  --ground: #0b0d1c; --paper: #18162b; --paper-2: #101426;
+  --ink: #f1eef7; --ink-soft: #c9c5d8; --mute: #948fa6;
+  --line: rgba(174,157,218,.18); --bar-track: #292844;
+  --chip: #1b1931; --chip-on: color-mix(in srgb, var(--accent) 27%, #1b1931);
+  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #1b1931); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #1b1931);
 }
 body {
-  margin: 0; background: radial-gradient(circle at 82% 3%, rgba(96,140,200,.22), transparent 32rem), var(--ground); color: var(--ink);
+  margin:0; background:radial-gradient(circle at 12% 7%,rgba(145,83,205,.22),transparent 31rem),radial-gradient(circle at 92% 43%,rgba(62,139,204,.2),transparent 36rem),radial-gradient(circle at 56% -9%,rgba(211,167,70,.11),transparent 25rem),linear-gradient(145deg,#0e0919 0%,var(--ground) 52%,#081523 100%); background-attachment:fixed; color: var(--ink);
   font-family: "Instrument Sans", system-ui, sans-serif; line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
@@ -61,7 +61,7 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .note { color: var(--mute); font-size: .88rem; margin: 0 0 1rem; max-width: 62ch; }
 
 /* filter */
-.filter { background: linear-gradient(145deg,rgba(40,16,22,.97),rgba(30,11,16,.97)); border: 1px solid color-mix(in srgb,var(--accent) 55%,transparent); border-radius: 18px; padding: 1.2rem 1.25rem 1.35rem; margin-bottom: 1.8rem; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+.filter { background:linear-gradient(145deg,rgba(31,20,51,.97),rgba(13,19,38,.97)); border: 1px solid color-mix(in srgb,var(--accent) 55%,transparent); border-radius: 18px; padding: 1.2rem 1.25rem 1.35rem; margin-bottom: 1.8rem; box-shadow:0 20px 50px rgba(0,0,0,.22),inset 0 1px rgba(190,163,235,.04); }
 .filter-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem 1rem; margin-bottom: .85rem; }
 .filter-top h2 { margin: 0; font-size: 1.15rem; }
 .filter-status { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink-soft); }
@@ -179,6 +179,7 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 footer { margin-top: 3rem; color: var(--mute); font-size: .8rem; max-width: 66ch; }
 footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--ink-soft); }
 @media (max-width: 720px) {
+  body { background-attachment:scroll; }
   .list-head, .row { grid-template-columns: 2.1rem 4.8rem 1fr; gap: .55rem; }
   .row { padding: .75rem .55rem; }
   .m { width: 68px; } .m img { width: 44px; height: 44px; }
