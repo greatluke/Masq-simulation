@@ -6,8 +6,8 @@
 <style>
 * { box-sizing: border-box; }
 :root {
-  --accent: #7c3aa8; --accent2: #b4862e;
-  --ground: #f3eee7; --paper: #fffdfa; --paper-2: #f7f2ea;
+  --accent: #b4862e; --accent2: #9a5b2c;
+  --ground: #f4efe4; --paper: #fffdfa; --paper-2: #f7f2ea;
   --ink: #241d2e; --ink-soft: #4b4256; --mute: #877d92;
   --line: #e5ddd1; --bar-track: #ece4da;
   --chip: #fff; --chip-on: color-mix(in srgb, var(--accent) 16%, #fff);
@@ -15,7 +15,7 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground: #17121f; --paper: #211b2c; --paper-2: #191320;
+    --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
     --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
     --line: #342b41; --bar-track: #2c2439;
     --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
@@ -23,7 +23,7 @@
   }
 }
 :root[data-theme="dark"] {
-  --ground: #17121f; --paper: #211b2c; --paper-2: #191320;
+  --ground: #1b1610; --paper: #211b2c; --paper-2: #191320;
   --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
   --line: #342b41; --bar-track: #2c2439;
   --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
@@ -120,17 +120,13 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
   Each list is a round-robin on the client's real battle engine — every finalist plays every other,
   both slot orders, many seeds, draws = &frac12;. Open a scenario to filter by the masks you own.</p>
   <div class="cards">
-    <a class="card" href="./purple.html" style="--accent:#7c3aa8;--accent2:#b4862e">
-      <span class="card-tag">Purple only · Level 6</span>
-      <span class="card-title">Epic-only lineups</span>
-      <span class="card-sub">100 ranked lineups · best 76.3%</span>
-    </a><a class="card" href="./purple-blue.html" style="--accent:#2f6fb0;--accent2:#7c3aa8">
-      <span class="card-tag">Purple L4 + Blue L6</span>
-      <span class="card-title">Epic L4 + Rare L6 lineups</span>
-      <span class="card-sub">100 ranked lineups · best 90.6%</span>
-    </a><a class="card" href="./gold.html" style="--accent:#b4862e;--accent2:#9a5b2c">
+    <a class="card" href="./gold.html" style="--accent:#b4862e;--accent2:#9a5b2c">
       <span class="card-tag">Gold only · Level 6</span>
       <span class="card-title">Legendary-only lineups</span>
+      <span class="card-sub">pending</span>
+    </a><a class="card" href="./mixed.html" style="--accent:#2f6fb0;--accent2:#b4862e">
+      <span class="card-tag">Purple L4 · Blue L6 · Gold L1</span>
+      <span class="card-title">Mixed pool lineups</span>
       <span class="card-sub">pending</span>
     </a>
   </div>
