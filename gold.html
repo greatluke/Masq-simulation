@@ -80,6 +80,9 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .chip .tgl:disabled { opacity: .3; cursor: not-allowed; transform: none; }
 .flegend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font-size: .78rem; color: var(--mute); margin: .3rem 0 1rem; align-items: center; }
 .flegend b { font-family: "IBM Plex Mono", monospace; }
+.fopt { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; color: var(--ink-soft); }
+.fopt input { accent-color: var(--accent); cursor: pointer; }
+.fopt-sub { color: var(--mute); }
 .flegend .i { color: var(--accent); }
 .flegend .e { color: var(--bad); }
 
@@ -138,7 +141,12 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
     <p class="note" style="margin:.1rem 0 .5rem">Each mask has a <b style="color:var(--accent)">+</b> (top-left, require) and a
     <b style="color:var(--bad)">&times;</b> (top-right, ban). A team shows only if it has <em>every</em> required mask
     and <em>none</em> of the banned — best 100 shown. <span id="hint"></span></p>
-    <div class="flegend"><span><b class="i">+</b> require &nbsp;(max 5)</span><span><b class="e">&times;</b> ban</span><span>rank <b>#</b> = position in the full ranking</span></div>
+    <div class="flegend">
+      <span><b class="i">+</b> require &nbsp;(max 5)</span>
+      <span><b class="e">&times;</b> ban</span>
+      <span>rank <b>#</b> = position in the full ranking</span>
+      <label class="fopt"><input type="checkbox" id="dedup"> best ordering only <span class="fopt-sub">(one row per mask set)</span></label>
+    </div>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -189,7 +197,8 @@ Object.entries(POOL).sort((a,b)=> b[1].f - a[1].f).forEach(([typ,info])=>{
   chipsEl.appendChild(c);
 });
 
-document.getElementById('clear').onclick = ()=>{ state.clear(); render(); };
+document.getElementById('clear').onclick = ()=>{ state.clear(); document.getElementById('dedup').checked = false; render(); };
+document.getElementById('dedup').onchange = render;
 
 function render(){
   const inc = [], exc = [];
@@ -205,19 +214,28 @@ function render(){
     plus.disabled = (v!=='in') && nIn >= MAX_INCLUDE;
   });
 
+  const dedup = document.getElementById('dedup').checked;
   const matches = [];
+  const seenCombo = new Set();
   for (let r = 0; r < TEAMS.length; r++){
     const types = TEAMS[r].slice(1);
     let ok = true;
     for (const w of inc) if (!types.includes(w)) { ok = false; break; }
     if (ok) for (const w of exc) if (types.includes(w)) { ok = false; break; }
-    if (ok) matches.push(r);
+    if (!ok) continue;
+    if (dedup) {
+      const combo = types.slice().sort((a,b)=>a-b).join(',');   // TEAMS sorted desc -> first = best
+      if (seenCombo.has(combo)) continue;
+      seenCombo.add(combo);
+    }
+    matches.push(r);
   }
 
   const parts = [];
   if (nIn) parts.push(`${nIn} incl`);
   if (exc.length) parts.push(`${exc.length} excl`);
-  statusEl.textContent = `${matches.length} team${matches.length===1?'':'s'}`
+  if (dedup) parts.push('sets');
+  statusEl.textContent = `${matches.length} ${dedup?'mask set':'team'}${matches.length===1?'':'s'}`
     + (parts.length ? ` (${parts.join(', ')})` : '')
     + (matches.length > MAXROWS ? ` · showing ${MAXROWS}` : '');
   hintEl.textContent = (nIn && !matches.length)
