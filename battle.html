@@ -538,7 +538,7 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
       <button id="next" type="button" aria-label="Next event">›</button>
       <div class="timeline" id="timeline" aria-label="Battle progress"><i id="timeline-fill"></i></div>
       <select id="speed" aria-label="Playback speed"><option value="2800">0.5×</option><option value="1400" selected>1×</option><option value="700">2×</option><option value="350">4×</option></select>
-      <button class="sound-toggle" id="sound" type="button" aria-pressed="false">🔇 Sound off</button>
+      <button class="sound-toggle on" id="sound" type="button" aria-pressed="true">🔊 Sound on</button>
       <span class="stepcount" id="stepcount">0 / 0 events</span>
     </div>
   </section>
@@ -1837,7 +1837,10 @@ const ui = {
 let playback = null, eventIndex = 0, timer = 0, finishTimer = 0, playing = false, cards = new Map();
 const esc = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const AudioEngine=window.AudioContext||window.webkitAudioContext;
-let audioCtx=null,audioMaster=null,soundOn=false;
+let audioCtx=null,audioMaster=null,soundOn=true;
+const battleOst=new Audio('./assets/sfx/OST_dancing_party.ogg'); battleOst.loop=true; battleOst.preload='auto'; battleOst.volume=.22;
+function playOst(){if(!soundOn)return;const p=battleOst.play();if(p&&p.catch)p.catch(()=>{});}
+function stopOst(){battleOst.pause();battleOst.currentTime=0;}
 // Local-only extracted game cues. The public docs build intentionally keeps the synthesized fallback.
 const GAME_CUES={start:'./assets/sfx/hero_prepare_fight.ogg',attack:'./assets/sfx/dancebattle_atk_1.ogg',hit:'./assets/sfx/dancebattle_hit.ogg',exchange:'./assets/sfx/dancebattle_hit.ogg',skill:'./assets/sfx/dancebattle_emission.ogg',buff:'./assets/sfx/dancebattle_buff.ogg',anxiety:'./assets/sfx/dancebattle_debuff.ogg',shield:'./assets/sfx/dancebattle_buff.ogg',ko:'./assets/sfx/dancebattle_explode.ogg',summon:'./assets/sfx/dancebattle_emission.ogg',win:'./assets/sfx/war_victory.ogg',lose:'./assets/sfx/war_defeat.ogg'};
 const gameAudio={};
@@ -1879,7 +1882,8 @@ function soundCue(kind,result){
 function setSound(on){
   soundOn=!!on;
   if(soundOn){ensureAudio();if(audioMaster)audioMaster.gain.setTargetAtTime(.38,audioCtx.currentTime,.015);}
-  else if(audioMaster)audioMaster.gain.setTargetAtTime(0,audioCtx.currentTime,.015);
+  else {if(audioMaster)audioMaster.gain.setTargetAtTime(0,audioCtx.currentTime,.015);stopOst();}
+  if(soundOn)playOst();
   ui.sound.classList.toggle('on',soundOn);ui.sound.setAttribute('aria-pressed',String(soundOn));ui.sound.textContent=soundOn?'🔊 Sound on':'🔇 Sound off';
 }
 const maskTip=document.createElement('aside'); maskTip.id='mask-tip'; maskTip.className='mask-tip'; maskTip.setAttribute('role','tooltip'); document.body.appendChild(maskTip);
@@ -2031,7 +2035,7 @@ function prepare(autoPlay=true) {
   if(!A.length||!B.length){ui.status.textContent='Both lineups need at least one mask.';return;}
   let seed=Math.floor(+document.getElementById('battle-seed').value)||1; seed=Math.max(1,Math.min(2147483647,seed)); document.getElementById('battle-seed').value=seed;
   playback={...battleLog(A,B,seed),seed}; playback.frames=buildFrames(playback.events); resetStage(); document.querySelector('.builder').open=false; ui.status.textContent=`${playback.events.length} exact engine events arranged into ${playback.frames.length} visual beats.`;
-  if(autoPlay)soundCue('start');
+  if(autoPlay){soundCue('start');playOst();}
   if(autoPlay){playing=true;updateTransport();schedule();document.querySelector('.arena').scrollIntoView({behavior:'smooth',block:'center'});}
 }
 document.getElementById('go').onclick=()=>prepare(true);
