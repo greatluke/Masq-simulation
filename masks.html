@@ -100,10 +100,13 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .dedup-box .dd b { font-family: "IBM Plex Mono", monospace; }
 .flegend .i { color: var(--accent); }
 .flegend .e { color: var(--bad); }
-.qbans { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 0 1rem; font-size: .78rem; color: var(--mute); }
-.qbans button { font: inherit; font-size: .78rem; font-weight: 600; padding: .28rem .7rem; border-radius: 999px;
-  border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
-.qbans button:hover { border-color: var(--bad); color: var(--bad); }
+.qbans { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin: .1rem 0 1rem;
+  padding: .55rem .7rem; border: 1px dashed color-mix(in srgb,var(--bad) 45%,var(--line)); border-radius: 11px;
+  font-size: .78rem; color: var(--ink-soft); }
+.qbans > span { font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: .68rem; color: var(--mute); }
+.qbans button { font: inherit; font-size: .78rem; font-weight: 600; padding: .3rem .8rem; border-radius: 999px;
+  border: 1px solid color-mix(in srgb,var(--bad) 55%,var(--line)); background: var(--chip); color: var(--ink); cursor: pointer; }
+.qbans button:hover { border-color: var(--bad); background: var(--chip-ex); color: var(--bad); }
 .qbans button.on { background: var(--chip-ex); border-color: var(--bad); color: var(--bad); }
 
 /* list */
