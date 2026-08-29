@@ -54,21 +54,13 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .note { color: var(--mute); font-size: .88rem; margin: 0 0 1rem; max-width: 62ch; }
 
 /* filter */
-.filter { position: sticky; top: .5rem; z-index: 30; background: var(--paper); border: 1px solid var(--line);
-  border-radius: 14px; padding: .8rem 1.1rem 1rem; margin-bottom: 1.6rem;
-  max-height: calc(100vh - 1rem); box-shadow: 0 10px 26px -16px rgba(0,0,0,.4); }
-.filter-top { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
-.filter:not(.collapsed) .filter-top { margin-bottom: .8rem; }
-.filter-top h2 { margin: 0; font-size: 1.1rem; }
+.filter { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.1rem 1.15rem; margin-bottom: 1.6rem; }
+.filter-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem 1rem; margin-bottom: .85rem; }
+.filter-top h2 { margin: 0; font-size: 1.15rem; }
 .filter-status { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink-soft); }
-.filter-btn { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft); font: inherit; font-size: .8rem; padding: .25rem .7rem; cursor: pointer; }
-.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-clear { margin-left: auto; }
-.filter.collapsed .filter-body { display: none; }
-.filter-toggle .fc { display: inline-block; transition: transform .12s ease; }
-.filter.collapsed .filter-toggle .fc { transform: rotate(-90deg); }
-.chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(172px,1fr)); gap: 1rem 1.6rem;
-  padding: .7rem .7rem .3rem; max-height: min(46vh, 380px); overflow-y: auto; overscroll-behavior: contain; }
+.filter-clear { margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft); font: inherit; font-size: .8rem; padding: .25rem .7rem; cursor: pointer; }
+.filter-clear:hover { border-color: var(--accent); color: var(--accent); }
+.chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(172px,1fr)); gap: 1rem 1.6rem; padding: .5rem .2rem 0; }
 .chip { position: relative; display: flex; align-items: center; gap: .55rem; padding: .45rem .55rem; border: 1px solid var(--line); border-radius: 11px; background: var(--chip); font-size: .82rem; text-align: left; color: var(--ink); overflow: visible; }
 .chip[data-state="in"] { background: var(--chip-on); border-color: var(--accent); font-weight: 600; }
 .chip[data-state="ex"] { background: var(--chip-ex); border-color: var(--bad); }
@@ -104,7 +96,7 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 
 /* list */
 .list-head, .row { display: grid; grid-template-columns: 3rem 6.2rem 1fr; gap: 1rem; align-items: center; }
-.list-head { background: var(--ground); padding: .55rem 1rem; border-bottom: 1px solid var(--line); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; color: var(--mute); }
+.list-head { position: sticky; top: 0; z-index: 5; background: var(--ground); padding: .55rem 1rem; border-bottom: 1px solid var(--line); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; color: var(--mute); }
 .row { padding: .75rem 1rem; border-bottom: 1px solid var(--line); background: var(--paper); }
 .row.alt { background: var(--paper-2); }
 .row.top3 { border-left: 3px solid var(--accent2); }
@@ -178,14 +170,12 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
     <div class="tile"><span class="k">Top win rate</span><span class="v">92.3<small>%</small></span></div>
   </div>
 
-  <div class="filter" id="filter">
+  <div class="filter">
     <div class="filter-top">
       <h2>Filter</h2>
       <span class="filter-status" id="status"></span>
-      <button class="filter-btn filter-clear" id="clear" type="button">clear</button>
-      <button class="filter-btn filter-toggle" id="ftoggle" type="button" aria-expanded="true"><span class="fc">&#9662;</span> <span id="ftoggle-lbl">hide</span></button>
+      <button class="filter-clear" id="clear" type="button">clear</button>
     </div>
-    <div class="filter-body">
     <p class="note" style="margin:.1rem 0 .5rem">Each mask has a <b style="color:var(--accent)">+</b> (top-left, require) and a
     <b style="color:var(--bad)">&times;</b> (top-right, ban). A team shows only if it has <em>every</em> required mask
     and <em>none</em> of the banned — best 100 shown. <span id="hint"></span></p>
@@ -205,7 +195,6 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
       </span>
     </label>
     <div class="chips" id="chips"></div>
-    </div>
   </div>
 
   <div class="list-head"><span style="text-align:right">#</span><span>Win rate</span><span>Lineup — slot 1 &rarr; 5</span></div>
@@ -266,18 +255,6 @@ Object.entries(POOL).sort((a,b)=> b[1].f - a[1].f).forEach(([typ,info])=>{
 
 document.getElementById('clear').onclick = ()=>{ state.clear(); document.getElementById('dedup').checked = true; render(); };
 document.getElementById('dedup').onchange = render;
-
-const filterEl = document.getElementById('filter');
-const ftoggle = document.getElementById('ftoggle');
-const ftlbl = document.getElementById('ftoggle-lbl');
-function setCollapsed(c){
-  filterEl.classList.toggle('collapsed', c);
-  ftoggle.setAttribute('aria-expanded', String(!c));
-  ftlbl.textContent = c ? 'filter' : 'hide';
-  try { localStorage.setItem('masq-filter-collapsed', c ? '1' : '0'); } catch(e){}
-}
-ftoggle.onclick = ()=> setCollapsed(!filterEl.classList.contains('collapsed'));
-try { if (localStorage.getItem('masq-filter-collapsed') === '1') setCollapsed(true); } catch(e){}
 
 function render(){
   const inc = [], exc = [];
