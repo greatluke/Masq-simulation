@@ -453,7 +453,7 @@ function render(keepPage){
     const mk = (label, to, dis)=>{
       const b = document.createElement('button'); b.type='button'; b.textContent = label;
       b.disabled = !!dis;
-      b.onclick = ()=>{ page = to; render(true); listEl.scrollIntoView({block:'start', behavior:'smooth'}); };
+      b.onclick = ()=>{ page = to; render(true); };
       return b;
     };
     pagerEl.appendChild(mk('\u2039 prev', page-1, page===0));
@@ -461,7 +461,7 @@ function render(keepPage){
     jump.innerHTML = `page <input type="number" min="1" max="${nPages}" value="${page+1}"> / ${nPages}`;
     jump.querySelector('input').onchange = e=>{
       let p = (parseInt(e.target.value,10)||1) - 1;
-      page = Math.max(0, Math.min(nPages-1, p)); render(true); listEl.scrollIntoView({block:'start'});
+      page = Math.max(0, Math.min(nPages-1, p)); render(true);
     };
     pagerEl.appendChild(jump);
     pagerEl.appendChild(mk('next \u203a', page+1, page>=nPages-1));
