@@ -2020,7 +2020,7 @@ function updateTransport() {
   ui.prev.disabled=!playback||eventIndex===0; ui.next.disabled=!playback||eventIndex>=total; ui.play.disabled=!playback||eventIndex>=total; ui.play.textContent=playing?'Pause':'Play';
 }
 function finishBattle(withSound=true) {
-  stop(); const r=playback;
+  stop(); stopOst(); const r=playback;
   ui.resultTitle.textContent=r.result===1?'Your lineup wins':r.result===2?'Opponent wins':'The floor ends level';
   ui.resultCopy.textContent=r.result===0?'Both lines fall in the same exchange.':`Surviving-body margin ${r.survivorDiff>=0?'+':''}${r.survivorDiff}. Seed ${r.seed}.`;
   ui.result.classList.add('show'); ui.status.textContent='Battle complete.'; if(withSound){soundCue('result',r.result);setTimeout(()=>soundCue('party',r.result),350);} updateTransport();
