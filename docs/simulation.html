@@ -394,6 +394,8 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
       <button data-team-act="load" type="button">load</button>
       <button data-team-act="export" type="button">export</button>
       <button data-team-act="import" type="button">import</button>
+      <button data-team-act="text-export" type="button">copy text</button>
+      <button data-team-act="text-import" type="button">paste text</button>
       <input id="team-file" type="file" accept="application/json,.json" hidden>
     </span>
   </div>
@@ -1600,6 +1602,22 @@ function downloadTeam() {
   const blob = new Blob([JSON.stringify({version:1, exportedAt:new Date().toISOString(), ...teamSnapshot()}, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'masquerade-team.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 500);
 }
+function teamText() {
+  const line = (label, list) => `${label}: ${cleanTeam(list).filter(Boolean).map(s => `${s.type}@${s.level}`).join(' | ') || 'empty'}`;
+  return `Masquerade Team v1\n${line('Yours', team.a)}\n${line('Opponent', team.b)}`;
+}
+function parseTeamText(raw) {
+  const out = {};
+  String(raw).split(/\r?\n/).forEach(line => {
+    const m = line.match(/^\s*(yours?|a|opponent|opp|b)\s*:\s*(.*)$/i); if (!m) return;
+    const side = /^(opponent|opp|b)$/i.test(m[1]) ? 'b' : 'a';
+    if (/^empty$/i.test(m[2].trim())) { out[side] = []; return; }
+    out[side] = m[2].split(/[|,]/).map(token => { const p = token.trim().match(/^(\d+)\s*(?:@|\s+lv?\s*)([1-6])?$/i); if (!p) return null; return {type:p[1], level:+(p[2] || 6)}; }).filter(Boolean);
+  });
+  if (!Array.isArray(out.a) && !Array.isArray(out.b)) throw Error('Use lines like Yours: 1001@6 | 1002@4');
+  return out;
+}
+async function copyTeamText() { const txt = teamText(); try { await navigator.clipboard.writeText(txt); teamNotice('Team text copied to clipboard.'); } catch (_) { window.prompt('Copy this team text:', txt); } }
 refreshTeamSaves();
 document.querySelector('.team-save-tools')?.addEventListener('click', e => {
   const act = e.target.closest('[data-team-act]')?.dataset.teamAct; if (!act) return;
@@ -1607,6 +1625,8 @@ document.querySelector('.team-save-tools')?.addEventListener('click', e => {
   if (act === 'load') { const i = +document.getElementById('team-saves').value; const x = savedTeams()[i]; if (!x) return teamNotice('Choose a saved team first.'); applyTeamSnapshot(x); teamNotice(`Loaded “${x.name}”.`); }
   if (act === 'export') downloadTeam();
   if (act === 'import') document.getElementById('team-file').click();
+  if (act === 'text-export') copyTeamText();
+  if (act === 'text-import') { const raw = window.prompt('Paste team text (Yours: 1001@6 | …):'); if (raw) { try { applyTeamSnapshot(parseTeamText(raw)); teamNotice('Imported team text.'); } catch (_) { teamNotice('Could not read that team text.'); } } }
 });
 document.getElementById('team-file')?.addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { applyTeamSnapshot(JSON.parse(r.result)); teamNotice(`Imported “${f.name}”.`); } catch (err) { teamNotice('Could not import that team file.'); } e.target.value = ''; }; r.readAsText(f); });
 
