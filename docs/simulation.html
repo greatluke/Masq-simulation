@@ -206,6 +206,24 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 <body>
 
 <style>
+.pal { background: linear-gradient(145deg,var(--paper),var(--paper-2)); border: 1px solid var(--line); border-radius: 16px; padding: .9rem 1rem 1rem; margin-bottom: 1.2rem; }
+.pal-top { display: flex; flex-wrap: wrap; gap: .5rem .8rem; align-items: center; margin-bottom: .7rem; }
+.pal-top input { flex: 1 1 200px; min-width: 150px; background: var(--chip); border: 1px solid var(--line); border-radius: 9px; color: var(--ink); font: inherit; font-size: .85rem; padding: .45rem .65rem; }
+.pal-rar { display: inline-flex; gap: .25rem; }
+.pal-rar button { font: inherit; font-size: .74rem; padding: .3rem .6rem; border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); border-radius: 8px; cursor: pointer; }
+.pal-rar button.on { background: var(--chip-on); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+.pal-count { font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--mute); }
+.pal-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(196px,1fr)); gap: .45rem; max-height: 340px; overflow-y: auto; padding-right: .2rem; }
+.pal-grid.drop-rm { outline: 2px dashed var(--bad); outline-offset: 4px; border-radius: 10px; }
+.ptile { display: grid; grid-template-columns: 40px 1fr; gap: .5rem; align-items: center; border: 1px solid var(--line); background: var(--chip); border-radius: 10px; padding: .4rem .5rem; cursor: grab; }
+.ptile:hover { border-color: var(--accent); }
+.ptile.hide { display: none; }
+.ptile img { width: 40px; height: 40px; border-radius: 7px; background: var(--paper-2); pointer-events: none; }
+.ptile .pn { font-size: .82rem; font-weight: 600; }
+.ptile .pm { font-family: "IBM Plex Mono", monospace; font-size: .66rem; color: var(--mute); }
+.ptile .pe { font-size: .68rem; color: var(--ink-soft); line-height: 1.35; margin-top: .1rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
 .sim-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.4rem; }
 .team { background: linear-gradient(145deg,var(--paper),var(--paper-2)); border: 1px solid var(--line); border-radius: 16px; padding: 1rem 1.1rem 1.15rem; }
 .team.b { border-color: color-mix(in srgb,var(--bad) 40%,var(--line)); }
@@ -213,11 +231,13 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .team .sub { font-size: .72rem; color: var(--mute); margin-bottom: .7rem; }
 .slots { display: flex; flex-direction: column; gap: .5rem; }
 .slot { display: grid; grid-template-columns: 1.4rem 46px 1fr auto; gap: .5rem; align-items: center;
-  border: 1px solid var(--line); border-radius: 10px; padding: .35rem .5rem; background: var(--chip); }
+  border: 1px solid var(--line); border-radius: 10px; padding: .35rem .5rem; background: var(--chip); min-height: 58px; }
+.slot.empty { border-style: dashed; color: var(--mute); }
+.slot.sel { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent); }
+.slot.drop { border-color: var(--accent); background: var(--chip-on); }
 .slot .sn { font-family: "IBM Plex Mono", monospace; color: var(--mute); font-size: .8rem; text-align: center; }
-.slot img { width: 46px; height: 46px; border-radius: 8px; background: var(--paper-2); }
-.slot .pick { background: none; border: 0; color: var(--ink); font: inherit; font-size: .88rem; text-align: left; cursor: pointer; padding: 0; min-width: 0; }
-.slot .pick.empty { color: var(--mute); }
+.slot img { width: 46px; height: 46px; border-radius: 8px; background: var(--paper-2); cursor: grab; }
+.slot .pick { background: none; border: 0; color: inherit; font: inherit; font-size: .88rem; text-align: left; cursor: pointer; padding: 0; min-width: 0; }
 .slot .lv { display: inline-flex; gap: 2px; }
 .slot .lv button { width: 20px; height: 20px; padding: 0; border: 1px solid var(--line); background: var(--paper-2);
   color: var(--ink-soft); font: 600 .64rem "IBM Plex Mono", monospace; border-radius: 5px; cursor: pointer; }
@@ -231,6 +251,7 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
   border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; max-width: 100%; }
 .sim-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: 1.4rem; }
 .sim-go { border: 1px solid var(--accent) !important; background: var(--accent) !important; color: #1c1008 !important; font-weight: 700 !important; padding: .5rem 1.3rem !important; }
+.hint { font-size: .74rem; color: var(--mute); margin: -.6rem 0 1.1rem; }
 .result { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.3rem 1.4rem; }
 .result.empty { color: var(--mute); }
 .res-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1.4rem; }
@@ -242,25 +263,30 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .res-bar .w { background: var(--good); } .res-bar .d { background: var(--mute); } .res-bar .l { background: var(--bad); }
 .res-legend { display: flex; gap: 1.2rem; font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--ink-soft); }
 .res-note { margin-top: .8rem; font-size: .82rem; color: var(--mute); }
-.picker { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.55); display: none; align-items: flex-start; justify-content: center; padding: 4vh 1rem; }
-.picker.open { display: flex; }
-.picker-box { width: min(720px, 100%); max-height: 88vh; overflow: auto; background: var(--paper); border: 1px solid var(--accent); border-radius: 16px; padding: 1rem 1.1rem 1.2rem; }
-.picker-box input { width: 100%; background: var(--chip); border: 1px solid var(--line); border-radius: 9px; color: var(--ink); font: inherit; padding: .45rem .65rem; margin-bottom: .8rem; }
-.pk-rar { font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: .7rem 0 .4rem; }
-.pk-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: .4rem; }
-.pk-grid button { display: flex; align-items: center; gap: .45rem; border: 1px solid var(--line); background: var(--chip); border-radius: 9px; padding: .35rem .45rem; color: var(--ink); font: inherit; font-size: .78rem; cursor: pointer; text-align: left; }
-.pk-grid button:hover { border-color: var(--accent); }
-.pk-grid img { width: 30px; height: 30px; border-radius: 6px; background: var(--paper-2); flex: none; }
-.pk-grid .hide { display: none; }
-@media (max-width: 760px) { .sim-wrap { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .sim-wrap { grid-template-columns: 1fr; } .pal-grid { max-height: 260px; } }
 </style>
 <div class="wrap">
   <a class="backlink" href="./index.html"><span aria-hidden="true">←</span> Masquerade atelier</a>
   <p class="eyebrow">Sandbox · real battle engine</p>
   <h1>Matchup <em>simulator</em></h1>
-  <p class="lede">Build both lineups (slot order matters — combat resolves front-to-front), then run it
-  over many battle seeds. Same engine as the rankings, validated 1000/1000 against the client's LuaJIT.
-  A single real match uses one server-picked seed, so the win rate here is your odds.</p>
+  <p class="lede">Search the palette and <strong>drag masks into the slots</strong> (or tap a slot, then tap a mask).
+  Drag between slots to reorder or swap — order matters, combat resolves front-to-front. Then run it over many
+  seeds on the same engine as the rankings (validated 1000/1000 vs the client's LuaJIT).</p>
+
+  <div class="pal">
+    <div class="pal-top">
+      <input id="pq" type="search" placeholder="search name or effect — e.g. summon, battle start, anxiety…" autocomplete="off">
+      <div class="pal-rar" id="prar">
+        <button data-q="all" class="on" type="button">all</button>
+        <button data-q="legendary" type="button">legendary</button>
+        <button data-q="epic" type="button">epic</button>
+        <button data-q="rare" type="button">rare</button>
+      </div>
+      <span class="pal-count" id="pcount"></span>
+    </div>
+    <div class="pal-grid" id="pgrid"></div>
+  </div>
+  <p class="hint">Drag a slot's icon onto the palette to remove it. Levels: the little 1–6 buttons on each slot.</p>
 
   <div class="sim-wrap">
     <div class="team a">
@@ -292,11 +318,6 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 
   <footer>Engine ported from <code>DanceBattleContext</code>; deterministic per seed. Not affiliated with OneMT.</footer>
 </div>
-
-<div class="picker" id="picker"><div class="picker-box">
-  <input id="pk-q" type="search" placeholder="search masks…" autocomplete="off">
-  <div id="pk-list"></div>
-</div></div>
 <script>
 /* Dance Battle engine — faithful JS port of the client's DanceBattleContext.
  * Deterministic given a seed. Validate with validate.mjs against the luajit oracle.
@@ -1319,80 +1340,120 @@ const PREFILL = [{"g":"Gold #1  (92%)","m":[[2006,6],[1010,6],[1004,6],[4003,6],
 const RARORD = {legendary:0, epic:1, rare:2};
 
 const team = { a: [null,null,null,null,null], b: [null,null,null,null,null] };
-let pickTarget = null;
+let sel = null;   // {side, i} currently-selected slot
+
+// ---------- palette ----------
+const pgrid = document.getElementById('pgrid'), pq = document.getElementById('pq'), pcount = document.getElementById('pcount');
+const order = Object.keys(MASKS).sort((x,y)=> (RARORD[MASKS[x].q]-RARORD[MASKS[y].q]) || MASKS[x].n.localeCompare(MASKS[y].n));
+let rar = 'all';
+for (const t of order) {
+  const m = MASKS[t], l6 = m.s[5];
+  const el = document.createElement('div');
+  el.className = 'ptile'; el.draggable = true; el.dataset.t = t; el.dataset.q = m.q;
+  el.dataset.hay = (m.n + ' ' + m.q + ' ' + m.eff.join(' ') + ' ' + (m.x ? 'conflicts ' + m.x : '')).toLowerCase();
+  el.innerHTML = `<img src="${m.i}" alt=""><div><div class="pn">${m.n}</div>`
+    + `<div class="pm">${m.q} · T${l6[0]} P${l6[1]}</div><div class="pe">${m.eff[5]}</div></div>`;
+  el.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', JSON.stringify({from:'pal', t})));
+  el.addEventListener('click', ()=> placeFromPalette(t));
+  pgrid.appendChild(el);
+}
+function filterPalette() {
+  const q = pq.value.trim().toLowerCase();
+  let shown = 0;
+  pgrid.querySelectorAll('.ptile').forEach(el=>{
+    const ok = (rar === 'all' || el.dataset.q === rar) && (!q || el.dataset.hay.includes(q));
+    el.classList.toggle('hide', !ok); if (ok) shown++;
+  });
+  pcount.textContent = shown + ' / ' + order.length;
+}
+pq.addEventListener('input', filterPalette);
+document.getElementById('prar').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  rar = b.dataset.q;
+  [...e.currentTarget.children].forEach(x=> x.classList.toggle('on', x === b));
+  filterPalette();
+});
+filterPalette();
+
+// palette as a remove-target for slot drags
+pgrid.addEventListener('dragover', e=>{ e.preventDefault(); pgrid.classList.add('drop-rm'); });
+pgrid.addEventListener('dragleave', ()=> pgrid.classList.remove('drop-rm'));
+pgrid.addEventListener('drop', e=>{
+  e.preventDefault(); pgrid.classList.remove('drop-rm');
+  const d = payload(e); if (d && d.from === 'slot') { team[d.side][d.i] = null; renderTeam(d.side); }
+});
+
+// ---------- slots ----------
+function placeFromPalette(t) {
+  let tgt = sel;
+  if (!tgt) { const i = team.a.findIndex(x=> !x); tgt = i >= 0 ? {side:'a', i} : {side:'a', i:4}; }
+  const cur = team[tgt.side][tgt.i];
+  team[tgt.side][tgt.i] = { type: t, level: cur ? cur.level : 6 };
+  renderTeam(tgt.side);
+}
+function payload(e) { try { return JSON.parse(e.dataTransfer.getData('text/plain')); } catch(_) { return null; } }
 
 function slotRow(side, i) {
   const s = team[side][i];
-  const el = document.createElement('div'); el.className = 'slot';
+  const el = document.createElement('div');
+  el.className = 'slot' + (s ? '' : ' empty') + (sel && sel.side===side && sel.i===i ? ' sel' : '');
+  el.addEventListener('click', ()=>{ sel = {side, i}; renderTeam('a'); renderTeam('b'); });
+  el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drop'); });
+  el.addEventListener('dragleave', ()=> el.classList.remove('drop'));
+  el.addEventListener('drop', e=>{
+    e.preventDefault(); el.classList.remove('drop');
+    const d = payload(e); if (!d) return;
+    if (d.from === 'pal') {
+      const cur = team[side][i]; team[side][i] = { type: d.t, level: cur ? cur.level : 6 };
+    } else if (d.from === 'slot') {
+      const src = team[d.side][d.i];
+      team[d.side][d.i] = team[side][i] || null;   // swap (or move if target empty)
+      team[side][i] = src;
+    }
+    renderTeam(side); if (d.from === 'slot' && d.side !== side) renderTeam(d.side);
+  });
+
   if (!s) {
-    el.innerHTML = `<span class="sn">${i+1}</span><span></span>`
-      + `<button class="pick empty" type="button">+ choose a mask</button><span></span>`;
-    el.querySelector('.pick').onclick = ()=> openPicker(side, i);
+    el.innerHTML = `<span class="sn">${i+1}</span><span></span><span class="pick">drop a mask here, or tap to select</span><span></span>`;
     return el;
   }
   const m = MASKS[s.type];
   const lv = [1,2,3,4,5,6].map(l=>`<button data-l="${l}"${l===s.level?' class="on"':''}>${l}</button>`).join('');
-  el.innerHTML = `<span class="sn">${i+1}</span><img src="${m.i}" alt="">`
-    + `<button class="pick" type="button">${m.n} <span style="color:var(--mute);font-size:.72rem">${m.q}</span></button>`
+  el.innerHTML = `<span class="sn">${i+1}</span>`
+    + `<img src="${m.i}" alt="" draggable="true">`
+    + `<button class="pick" type="button">${m.n} <span style="color:var(--mute);font-size:.72rem">${m.q} · T${m.s[s.level-1][0]} P${m.s[s.level-1][1]}</span></button>`
     + `<span class="lv">${lv}</span><button class="rm" title="remove">×</button>`;
-  el.querySelector('.pick').onclick = ()=> openPicker(side, i);
-  el.querySelector('.rm').onclick = ()=>{ team[side][i] = null; renderTeam(side); };
-  el.querySelectorAll('.lv button').forEach(b=> b.onclick = ()=>{ s.level = +b.dataset.l; renderTeam(side); });
+  const img = el.querySelector('img');
+  img.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', JSON.stringify({from:'slot', side, i})));
+  el.querySelector('.rm').addEventListener('click', e=>{ e.stopPropagation(); team[side][i] = null; renderTeam(side); });
+  el.querySelectorAll('.lv button').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); s.level = +b.dataset.l; renderTeam(side); }));
+  el.querySelector('.pick').addEventListener('click', e=>{ e.stopPropagation(); sel = {side, i}; renderTeam('a'); renderTeam('b'); });
   return el;
 }
 function renderTeam(side) {
-  const host = document.getElementById('slots-' + side);
-  host.replaceChildren(...[0,1,2,3,4].map(i=> slotRow(side, i)));
+  document.getElementById('slots-' + side).replaceChildren(...[0,1,2,3,4].map(i=> slotRow(side, i)));
 }
 
-// ---- picker ----
-const picker = document.getElementById('picker'), pkList = document.getElementById('pk-list'), pkQ = document.getElementById('pk-q');
-const order = Object.keys(MASKS).sort((x,y)=> (RARORD[MASKS[x].q]-RARORD[MASKS[y].q]) || MASKS[x].n.localeCompare(MASKS[y].n));
-let lastRar = null;
-pkList.innerHTML = '';
-for (const t of order) {
-  const m = MASKS[t];
-  if (m.q !== lastRar) { lastRar = m.q; const h = document.createElement('div'); h.className='pk-rar'; h.textContent=m.q; pkList.appendChild(h); }
-  const b = document.createElement('button'); b.type='button'; b.dataset.t = t; b.dataset.n = m.n.toLowerCase();
-  b.innerHTML = `<img src="${m.i}" alt=""><span>${m.n}</span>`;
-  b.onclick = ()=>{
-    const cur = team[pickTarget.side][pickTarget.i];
-    team[pickTarget.side][pickTarget.i] = { type: t, level: cur ? cur.level : 6 };
-    closePicker(); renderTeam(pickTarget.side);
-  };
-  pkList.appendChild(b);
-}
-function openPicker(side, i) { pickTarget = {side, i}; picker.classList.add('open'); pkQ.value=''; pkQ.dispatchEvent(new Event('input')); pkQ.focus(); }
-function closePicker() { picker.classList.remove('open'); }
-picker.onclick = e=>{ if (e.target === picker) closePicker(); };
-pkQ.addEventListener('input', ()=>{
-  const q = pkQ.value.trim().toLowerCase();
-  pkList.querySelectorAll('button').forEach(b=> b.classList.toggle('hide', q && !b.dataset.n.includes(q)));
-});
-window.addEventListener('keydown', e=>{ if (e.key === 'Escape') closePicker(); });
-
-// ---- prefill dropdowns ----
+// ---------- prefill / tools ----------
 for (const side of ['a','b']) {
-  const sel = document.getElementById('pre-' + side);
-  PREFILL.forEach((p, idx)=>{ const o = document.createElement('option'); o.value = idx; o.textContent = p.g; sel.appendChild(o); });
-  sel.onchange = ()=>{
-    if (sel.value === '') return;
-    team[side] = PREFILL[+sel.value].m.map(([type, level])=> ({ type: String(type), level }));
-    renderTeam(side); sel.value = '';
+  const s = document.getElementById('pre-' + side);
+  PREFILL.forEach((p, idx)=>{ const o = document.createElement('option'); o.value = idx; o.textContent = p.g; s.appendChild(o); });
+  s.onchange = ()=>{
+    if (s.value === '') return;
+    team[side] = PREFILL[+s.value].m.map(([type, level])=> ({ type: String(type), level }));
+    s.value = ''; renderTeam(side);
   };
 }
-
-// ---- tools ----
 document.querySelector('.sim-tools').addEventListener('click', e=>{
   const b = e.target.closest('button[data-act]'); if (!b) return;
   if (b.dataset.act === 'swap') { const t = team.a; team.a = team.b; team.b = t; }
-  if (b.dataset.act === 'copy') { team.b = team.a.map(s=> s ? {...s} : null); }
+  if (b.dataset.act === 'copy') { team.b = team.a.map(x=> x ? {...x} : null); }
   renderTeam('a'); renderTeam('b');
 });
 document.querySelectorAll('.team-tools button[data-act="clear"]').forEach(b=>
   b.onclick = ()=>{ team[b.dataset.side] = [null,null,null,null,null]; renderTeam(b.dataset.side); });
 
-// ---- simulate ----
+// ---------- simulate ----------
 document.getElementById('go').onclick = ()=>{
   const A = team.a.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
   const B = team.b.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
@@ -1400,8 +1461,8 @@ document.getElementById('go').onclick = ()=>{
   if (A.length < 1 || B.length < 1) { res.className = 'result empty'; res.textContent = 'Both lineups need at least one mask.'; return; }
   const N = +document.getElementById('seeds').value;
   let w=0, d=0, l=0, marg=0;
-  for (let s = 1; s <= N; s++) {
-    const o = simulate(CFG, A, B, s * 2654435761 % 2147483647 + 1);
+  for (let k = 1; k <= N; k++) {
+    const o = simulate(CFG, A, B, (k * 2654435761) % 2147483647 + 1);
     if (o.result === 1) w++; else if (o.result === 2) l++; else d++;
     marg += o.survivorDiff || 0;
   }
@@ -1413,7 +1474,7 @@ document.getElementById('go').onclick = ()=>{
     + `<span class="res-sub">win rate for <b>your lineup</b> over ${N} seeds (draws count &frac12;)</span></div>`
     + `<div class="res-bar"><i class="w" style="width:${w/N*100}%"></i><i class="d" style="width:${d/N*100}%"></i><i class="l" style="width:${l/N*100}%"></i></div>`
     + `<div class="res-legend"><span style="color:var(--good)">${w} win</span><span style="color:var(--mute)">${d} draw</span><span style="color:var(--bad)">${l} loss</span></div>`
-    + `<div class="res-note">avg surviving-body margin ${(marg/N>=0?'+':'')}${(marg/N).toFixed(2)} (your bodies − theirs at the end). Lineup order changes the result — try reordering.</div>`;
+    + `<div class="res-note">avg surviving-body margin ${marg/N>=0?'+':''}${(marg/N).toFixed(2)} (your bodies − theirs at the end). Reorder the slots and re-run — it changes the outcome.</div>`;
 };
 
 renderTeam('a'); renderTeam('b');
