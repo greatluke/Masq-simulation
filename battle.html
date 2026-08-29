@@ -1839,7 +1839,7 @@ const esc = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const AudioEngine=window.AudioContext||window.webkitAudioContext;
 let audioCtx=null,audioMaster=null,soundOn=false;
 // Local-only extracted game cues. The public docs build intentionally keeps the synthesized fallback.
-const GAME_CUES={start:'../data/sfx/hero_prepare_fight.ogg',attack:'../data/sfx/dancebattle_atk_1.ogg',hit:'../data/sfx/dancebattle_hit.ogg',exchange:'../data/sfx/dancebattle_hit.ogg',skill:'../data/sfx/dancebattle_emission.ogg',buff:'../data/sfx/dancebattle_buff.ogg',anxiety:'../data/sfx/dancebattle_debuff.ogg',shield:'../data/sfx/dancebattle_buff.ogg',ko:'../data/sfx/dancebattle_explode.ogg',summon:'../data/sfx/dancebattle_emission.ogg',win:'../data/sfx/war_victory.ogg',lose:'../data/sfx/war_defeat.ogg'};
+const GAME_CUES={start:'../data/sfx/hero_prepare_fight.m4a',attack:'../data/sfx/dancebattle_atk_1.m4a',hit:'../data/sfx/dancebattle_hit.m4a',exchange:'../data/sfx/dancebattle_hit.m4a',skill:'../data/sfx/dancebattle_emission.m4a',buff:'../data/sfx/dancebattle_buff.m4a',anxiety:'../data/sfx/dancebattle_debuff.m4a',shield:'../data/sfx/dancebattle_buff.m4a',ko:'../data/sfx/dancebattle_explode.m4a',summon:'../data/sfx/dancebattle_emission.m4a',win:'../data/sfx/war_victory.m4a',lose:'../data/sfx/war_defeat.m4a'};
 const gameAudio={};
 function playGameCue(kind,result){ const key=kind==='result'?(result===1?'win':'lose'):kind,src=GAME_CUES[key]; if(!src)return false; let a=gameAudio[key]; if(!a){a=new Audio(src);a.preload='auto';gameAudio[key]=a;} a.currentTime=0; const p=a.play(); if(p&&p.catch)p.catch(()=>{}); return true; }
 function ensureAudio(){
