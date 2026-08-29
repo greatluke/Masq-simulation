@@ -433,6 +433,8 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .mask-tip .tip-stat { padding:.2rem .42rem; border:1px solid var(--line); border-radius:999px; color:var(--ink-soft); font:500 .65rem "IBM Plex Mono",monospace; }
 .mask-tip .tip-stat.technique { color:#f1d68a; }
 .mask-tip .tip-stat.popularity { color:#8be0ad; }
+.hp-text .pop-high { color:#8be0ad; }
+.hp-text .pop-low { color:#ef9298; }
 .mask-tip .tip-label { margin-bottom:.2rem; color:var(--mute); font:600 .56rem "IBM Plex Mono",monospace; letter-spacing:.13em; text-transform:uppercase; }
 .mask-tip .tip-skill { color:var(--ink-soft); font-size:.76rem; line-height:1.48; }
 .event-toast { position:absolute; z-index:10; left:50%; top:50%; width:min(520px,calc(100% - 2rem)); transform:translate(-50%,-50%); padding:.7rem 1rem; border:1px solid var(--line); border-radius:12px; background:rgba(18,7,12,.88); color:var(--ink-soft); text-align:center; font-size:.78rem; line-height:1.4; box-shadow:0 16px 40px rgba(0,0,0,.38); backdrop-filter:blur(12px); opacity:0; pointer-events:none; }
@@ -1908,8 +1910,8 @@ function makeFighter(desc, hp) {
   const m = MASKS[String(desc.mt)] || { i:'./assets/masquerade-medal.png', s:[] }, el = document.createElement('article');
   const stats = m.s[desc.l-1] || [], max = Math.max(1,desc.p || stats[1] || hp || 1), technique = Math.max(0,desc.a ?? stats[0] ?? 0);
   const tier=m.q||'summoned'; el.className=`fighter tier-${tier}`+(desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
-  el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span><span class="shield-tag" role="img" aria-label="Partner Protection" title="Partner Protection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 5v6c0 5.2-3.4 9-8 11-4.6-2-8-5.8-8-11V5l8-3Z"/></svg></span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
-  const card = { el, desc:{...desc}, hp, max, technique, anxiety:new Set(), shields:new Set() };
+  el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span><span class="shield-tag" role="img" aria-label="Partner Protection" title="Partner Protection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 5v6c0 5.2-3.4 9-8 11-4.6-2-8-5.8-8-11V5l8-3Z"/></svg></span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text"><span class="pop-value">${hp}</span>/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
+  const card = { el, desc:{...desc}, hp, max, base:max, technique, anxiety:new Set(), shields:new Set() };
   el.tabIndex=0; el.setAttribute('aria-describedby','mask-tip');
   el.addEventListener('mouseenter',()=>showMaskTip(card)); el.addEventListener('mouseleave',hideMaskTip);
   el.addEventListener('focus',()=>showMaskTip(card)); el.addEventListener('blur',hideMaskTip);
@@ -1919,8 +1921,8 @@ function makeFighter(desc, hp) {
 }
 function updateTechnique(card, value) { card.technique=Math.max(0,value); card.el.querySelector('.tech-value').textContent=card.technique; if(activeTipCard===card)showMaskTip(card); }
 function updateHp(card, hp, animate=true) {
-  card.hp = Math.max(0,hp); card.max = Math.max(card.max,card.hp);
-  card.el.querySelector('.hp-text').textContent = `${card.hp}/${card.max}`;
+  card.hp = Math.max(0,hp);
+  const value=card.el.querySelector('.pop-value'); value.textContent=card.hp; value.classList.toggle('pop-high',card.hp>card.base); value.classList.toggle('pop-low',card.hp<card.base);
   const fill = card.el.querySelector('.hp-fill'); if (!animate) fill.style.transition = 'none';
   fill.style.width = `${Math.max(0,Math.min(100,card.hp/card.max*100))}%`;
   if (!animate) requestAnimationFrame(()=> fill.style.transition = '');
@@ -1955,7 +1957,7 @@ function applyEvent(e, animate=true) {
     if (animate) pulseToast(`<b>${esc(e.src.n)}</b> · ${esc(eff)}`);
   } else if (e.k === 'dmg') {
     if (src && animate) animateClass(src.el,e.src.s===1?'hit-a':'hit-b',420);
-    if (tgt) { tgt.max=Math.max(tgt.max,e.left+e.amt); updateHp(tgt,e.left,animate); if (animate) { animateClass(tgt.el,'struck',420); animateClass(tgt.el,'hp-deduct',560); const f=document.createElement('span'); f.className='float-dmg'; f.textContent=`−${e.amt}`; tgt.el.appendChild(f); setTimeout(()=>f.remove(),900); } }
+    if (tgt) { updateHp(tgt,e.left,animate); if (animate) { animateClass(tgt.el,'struck',420); animateClass(tgt.el,'hp-deduct',560); const f=document.createElement('span'); f.className='float-dmg'; f.textContent=`−${e.amt}`; tgt.el.appendChild(f); setTimeout(()=>f.remove(),900); } }
     if (animate) ui.status.textContent = `${e.src ? e.src.n : 'An effect'} ${e.sk?'casts at':'hits'} ${e.tgt.n} for ${e.amt} Popularity.`;
   } else if (e.k === 'block') {
     if (src && animate && !e.sk) animateClass(src.el,e.src.s===1?'hit-a':'hit-b',420);
