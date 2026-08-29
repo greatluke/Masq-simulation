@@ -383,10 +383,14 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .stage { position:relative; z-index:2; display:grid; grid-template-rows:1fr 1fr; gap:2.25rem; min-height:470px; padding:2rem clamp(.8rem,3vw,2rem); }
 .formation { display:flex; justify-content:center; align-items:end; gap:clamp(.35rem,1.4vw,1rem); min-width:0; }
 .formation.enemy { align-items:start; }
-.fighter { --side:#72c69a; position:relative; width:min(16.5vw,138px); min-width:0; padding:.6rem .55rem .65rem; border:1px solid color-mix(in srgb,var(--side) 32%,var(--line)); border-radius:16px; background:linear-gradient(155deg,color-mix(in srgb,var(--side) 9%,#2b1720),#160b10); box-shadow:0 14px 26px rgba(0,0,0,.25); transform-origin:center; transition:opacity .32s ease,filter .32s ease,transform .32s ease; cursor:help; }
+.fighter { --side:#72c69a; --tier:#8f9c97; position:relative; width:min(16.5vw,138px); min-width:0; padding:.6rem .55rem .65rem; border:1px solid color-mix(in srgb,var(--tier) 76%,var(--line)); border-radius:16px; background:linear-gradient(155deg,color-mix(in srgb,var(--side) 9%,#2b1720),#160b10); box-shadow:0 14px 26px rgba(0,0,0,.25),0 0 0 1px color-mix(in srgb,var(--tier) 14%,transparent),0 0 20px color-mix(in srgb,var(--tier) 9%,transparent); transform-origin:center; transition:opacity .32s ease,filter .32s ease,transform .32s ease; cursor:help; }
+.fighter.tier-legendary { --tier:#d3a746; }
+.fighter.tier-epic { --tier:#a978e5; }
+.fighter.tier-rare { --tier:#55afe2; }
+.fighter.tier-summoned { --tier:#8f9c97; }
 .fighter:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
 .formation.enemy .fighter { --side:#ef7d82; }
-.fighter .portrait { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#130a0e; border:1px solid color-mix(in srgb,var(--side) 36%,transparent); }
+.fighter .portrait { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#130a0e; border:1px solid color-mix(in srgb,var(--tier) 72%,transparent); box-shadow:inset 0 0 12px color-mix(in srgb,var(--tier) 10%,transparent); }
 .fighter img { display:block; width:100%; height:100%; object-fit:cover; }
 .fighter .lvtag { position:absolute; top:.35rem; right:.35rem; padding:.15rem .35rem; border-radius:999px; background:rgba(10,4,7,.78); color:#fff; font:600 .56rem "IBM Plex Mono",monospace; backdrop-filter:blur(6px); }
 .fighter .tech-tag { position:absolute; z-index:2; top:.35rem; left:.35rem; display:inline-flex; align-items:center; gap:.2rem; min-height:20px; padding:.15rem .35rem; border-radius:999px; background:rgba(10,4,7,.82); color:#f1d68a; font:600 .56rem "IBM Plex Mono",monospace; backdrop-filter:blur(6px); }
@@ -394,7 +398,7 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .fighter .anxiety-tag { display:none; position:absolute; z-index:3; left:.35rem; bottom:.35rem; padding:.14rem .36rem; border:1px solid rgba(207,157,255,.6); border-radius:999px; background:rgba(57,20,82,.88); color:#ead4ff; font:700 .46rem "IBM Plex Mono",monospace; letter-spacing:.08em; }
 .fighter .shield-tag { display:none; position:absolute; z-index:4; right:.35rem; bottom:.35rem; width:24px; height:24px; place-items:center; border:1px solid rgba(175,248,204,.78); border-radius:50%; background:rgba(24,105,67,.94); color:#d9ffe8; box-shadow:0 0 14px rgba(80,216,137,.5); }
 .fighter .shield-tag svg { width:14px; height:14px; fill:currentColor; stroke:#17643f; stroke-width:1.2; }
-.fighter.anxious { border-color:#bd74f1; box-shadow:0 0 0 2px rgba(189,116,241,.18),0 0 30px rgba(128,54,184,.42); animation:anxiety 1.35s ease-in-out infinite; }
+.fighter.anxious { box-shadow:0 0 0 2px rgba(189,116,241,.18),0 0 30px rgba(128,54,184,.42); animation:anxiety 1.35s ease-in-out infinite; }
 .fighter.anxious .portrait::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 75%,rgba(183,104,244,.08),rgba(88,26,129,.46)); mix-blend-mode:screen; pointer-events:none; }
 .fighter.anxious .anxiety-tag { display:block; }
 .fighter.shielded::before { content:""; position:absolute; z-index:3; inset:-5px; border:2px solid rgba(126,226,166,.74); border-radius:20px; box-shadow:inset 0 0 20px rgba(80,216,137,.18),0 0 24px rgba(57,185,109,.36); pointer-events:none; animation:shieldidle 1.8s ease-in-out infinite; }
@@ -1820,7 +1824,7 @@ function cardFor(desc) { return desc ? cards.get(desc.id) : null; }
 function makeFighter(desc, hp) {
   const m = MASKS[String(desc.mt)] || { i:'./assets/masquerade-medal.png', s:[] }, el = document.createElement('article');
   const stats = m.s[desc.l-1] || [], max = Math.max(1,desc.p || stats[1] || hp || 1), technique = Math.max(0,desc.a ?? stats[0] ?? 0);
-  el.className = 'fighter' + (desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
+  const tier=m.q||'summoned'; el.className=`fighter tier-${tier}`+(desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
   el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span><span class="shield-tag" role="img" aria-label="Partner Protection" title="Partner Protection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 5v6c0 5.2-3.4 9-8 11-4.6-2-8-5.8-8-11V5l8-3Z"/></svg></span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
   const card = { el, desc:{...desc}, hp, max, technique, anxiety:new Set(), shields:new Set() };
   el.tabIndex=0; el.setAttribute('aria-describedby','mask-tip');
