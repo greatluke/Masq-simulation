@@ -323,9 +323,9 @@ function render(){
       + `<span class="wr-bar"><i style="width:${wr.toFixed(1)}%"></i></span>`
       + (mu ? `<span class="mu-field" title="avg win rate vs the top-${MCOHORT} distinct-set field">vs field ${mu.c}%</span>`:'')
       + `</span>`
-      + `<div class="lineup">`
+      + `<div class="lineup">${masks}`
       + (isPerm ? `<span class="perm-pill" title="same five masks as #${permOf}, different slot order">\u21c4 perm of #${permOf}</span>` : '')
-      + `${masks}</div>`;
+      + `</div>`;
     if (mu) {
       d.addEventListener('click', e=>{
         if (e.target.closest('a')) return;
