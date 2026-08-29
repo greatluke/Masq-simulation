@@ -100,6 +100,11 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .dedup-box .dd b { font-family: "IBM Plex Mono", monospace; }
 .flegend .i { color: var(--accent); }
 .flegend .e { color: var(--bad); }
+.qbans { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 0 1rem; font-size: .78rem; color: var(--mute); }
+.qbans button { font: inherit; font-size: .78rem; font-weight: 600; padding: .28rem .7rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
+.qbans button:hover { border-color: var(--bad); color: var(--bad); }
+.qbans button.on { background: var(--chip-ex); border-color: var(--bad); color: var(--bad); }
 
 /* list */
 .list-head, .row { display: grid; grid-template-columns: 3rem 6.2rem 1fr; gap: 1rem; align-items: center; }
@@ -229,8 +234,9 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
       <span><b class="i">+</b> require &nbsp;(max 5)</span>
       <span><b class="e">&times;</b> ban</span>
       <span>rank <b>#</b> = position in the full ranking</span>
-      <span>click a row for its hard / soft matchups</span>
+      <span>click a mask for its skill · click a row for its matchups</span>
     </div>
+    
     <label class="dedup-box">
       <input type="checkbox" id="dedup" checked>
       <span>
@@ -303,6 +309,16 @@ Object.entries(POOL).sort((a,b)=> b[1].f - a[1].f).forEach(([typ,info])=>{
 document.getElementById('clear').onclick = ()=>{ state.clear(); document.getElementById('dedup').checked = true; render(); };
 document.getElementById('dedup').onchange = render;
 
+const qbansEl = document.getElementById('qbans');
+const typesOfRarity = q => Object.keys(POOL).filter(t => (DESC[t]||{}).q === q);
+if (qbansEl) qbansEl.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b) return;
+  const ts = typesOfRarity(b.dataset.q);
+  const allBanned = ts.length && ts.every(t => state.get(t) === 'ex');
+  ts.forEach(t => allBanned ? state.delete(t) : state.set(t, 'ex'));
+  render();
+});
+
 function render(){
   const inc = [], exc = [];
   for (const [t,v] of state) (v==='in'?inc:exc).push(+t);
@@ -315,6 +331,10 @@ function render(){
     plus.classList.toggle('on', v==='in');
     minus.classList.toggle('on', v==='ex');
     plus.disabled = (v!=='in') && nIn >= MAX_INCLUDE;
+  });
+  if (qbansEl) [...qbansEl.querySelectorAll('button')].forEach(b=>{
+    const ts = typesOfRarity(b.dataset.q);
+    b.classList.toggle('on', ts.length && ts.every(t => state.get(t) === 'ex'));
   });
 
   const dedup = document.getElementById('dedup').checked;

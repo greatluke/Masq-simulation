@@ -100,6 +100,11 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .dedup-box .dd b { font-family: "IBM Plex Mono", monospace; }
 .flegend .i { color: var(--accent); }
 .flegend .e { color: var(--bad); }
+.qbans { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0 0 1rem; font-size: .78rem; color: var(--mute); }
+.qbans button { font: inherit; font-size: .78rem; font-weight: 600; padding: .28rem .7rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
+.qbans button:hover { border-color: var(--bad); color: var(--bad); }
+.qbans button.on { background: var(--chip-ex); border-color: var(--bad); color: var(--bad); }
 
 /* list */
 .list-head, .row { display: grid; grid-template-columns: 3rem 6.2rem 1fr; gap: 1rem; align-items: center; }
