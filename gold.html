@@ -112,6 +112,10 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .wr-bar { display: block; height: 4px; border-radius: 3px; background: var(--bar-track); overflow: hidden; margin-top: .3rem; }
 .wr-bar i { display: block; height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); }
 .mu-field { display: block; margin-top: .25rem; font-size: .68rem; color: var(--mute); }
+.row.perm { opacity: .62; }
+.row.perm:hover { opacity: 1; }
+.perm-tag { display: block; margin-top: .15rem; font-size: .58rem; font-weight: 500; font-style: italic;
+  color: var(--mute); white-space: nowrap; letter-spacing: 0; }
 .drawer { padding: .8rem 1rem 1rem; background: var(--paper-2); border-bottom: 1px solid var(--line);
   display: grid; grid-template-columns: 1fr 1fr; gap: .55rem 1.4rem; align-items: start; }
 .mu-hd { grid-column: 1 / -1; color: var(--ink-soft); font-size: .8rem; }
@@ -212,6 +216,13 @@ const MAXROWS = 100;
 const MAX_INCLUDE = 5;
 const state = new Map();   // typ(string) -> 'in' | 'ex'
 
+// for each mask set, the rank of its best (highest-ranked) ordering
+const comboBest = {};
+for (let i = 0; i < TEAMS.length; i++) {
+  const k = TEAMS[i].slice(1).slice().sort((a,b)=>a-b).join(',');
+  if (comboBest[k] === undefined) comboBest[k] = i + 1;
+}
+
 const chipsEl = document.getElementById('chips');
 const listEl  = document.getElementById('list');
 const statusEl = document.getElementById('status');
@@ -293,8 +304,10 @@ function render(){
   matches.slice(0, MAXROWS).forEach((r, di)=>{
     const row = TEAMS[r], wr = row[0]/100, types = row.slice(1), rank = r+1;
     const mu = MATCH[rank];
+    const permOf = (!dedup) ? (comboBest[types.slice().sort((a,b)=>a-b).join(',')] || rank) : rank;
+    const isPerm = permOf < rank;
     const d = document.createElement('div');
-    d.className = 'row' + (di%2 ? ' alt':'') + (rank<=3 ? ' top3':'') + (mu ? ' has-mu':'');
+    d.className = 'row' + (di%2 ? ' alt':'') + (rank<=3 ? ' top3':'') + (mu ? ' has-mu':'') + (isPerm ? ' perm':'');
     const masks = types.map((typ,i)=>{
       const info = POOL[typ] || {n:typ,i:'',lv:'',s:[0,0]};
       const sel = state.get(String(typ)) === 'in' ? ' sel':'';
@@ -303,7 +316,7 @@ function render(){
         + `<span class="mn">${info.n}</span>`
         + (LVL_MIXED ? `<span class="lv">L${info.lv}</span>`:'') + `</div>`;
     }).join('');
-    d.innerHTML = `<span class="rank">${rank}${mu?'<span class="caret">\u25be</span>':''}</span>`
+    d.innerHTML = `<span class="rank">${rank}${mu?'<span class="caret">\u25be</span>':''}${isPerm?`<span class="perm-tag">perm of #${permOf}</span>`:''}</span>`
       + `<span class="wr"><b>${wr.toFixed(2)}</b><span class="pct">%</span>`
       + `<span class="wr-bar"><i style="width:${wr.toFixed(1)}%"></i></span>`
       + (mu ? `<span class="mu-field" title="avg win rate vs the top-${MCOHORT} distinct-set field">vs field ${mu.c}%</span>`:'')
