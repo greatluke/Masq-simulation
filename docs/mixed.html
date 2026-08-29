@@ -146,15 +146,19 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .mu-chip b { font-family: "IBM Plex Mono", monospace; flex: none; width: 2.6rem; }
 .mu-chip .mu-r { color: var(--mute); font-family: "IBM Plex Mono", monospace; flex: none; font-size: .72rem; }
 .mu-chip .mu-ics { display: inline-flex; gap: 3px; margin-left: auto; }
-.mu-chip .mu-ics img { width: 40px; height: 40px; border-radius: 7px; background: var(--paper-2); display: block; }
+.mu-mask { --tier:#8f9c97; width:40px; height:40px; display:block; padding:3px; border:1px solid color-mix(in srgb,var(--tier) 72%,var(--line)); border-radius:8px; background:linear-gradient(145deg,color-mix(in srgb,var(--tier) 24%,var(--paper)),color-mix(in srgb,var(--tier) 8%,var(--paper-2))); box-shadow:inset 0 1px color-mix(in srgb,var(--tier) 20%,transparent); }
+.mu-mask img { width:100%; height:100%; border-radius:5px; background:var(--paper-2); display:block; }
 .mu-grp.hard .mu-chip { border-color: var(--bad); background: var(--chip-ex); }
 .mu-grp.hard .mu-chip b { color: var(--bad); }
 .mu-grp.soft .mu-chip { border-color: var(--good); background: var(--chip-good); }
 .mu-grp.soft .mu-chip b { color: var(--good); }
 @media (max-width: 620px) { .drawer { grid-template-columns: 1fr; } .mu-grp.hard, .mu-grp.soft { grid-column: 1; } }
 .lineup { display: flex; flex-wrap: wrap; gap: .5rem; }
-.m { position: relative; width: 90px; flex: none; display: flex; flex-direction: column; align-items: center; gap: .22rem; text-align: center; }
-.m img { width: 50px; height: 50px; border-radius: 9px; border: 1px solid var(--line); background: var(--paper-2); }
+.tier-legendary { --tier:#d3a746; }
+.tier-epic { --tier:#a978e5; }
+.tier-rare { --tier:#55afe2; }
+.m { --tier:#8f9c97; position:relative; width:90px; flex:none; display:flex; flex-direction:column; align-items:center; gap:.22rem; padding:.45rem .3rem .38rem; border:1px solid color-mix(in srgb,var(--tier) 72%,var(--line)); border-radius:12px; background:linear-gradient(150deg,color-mix(in srgb,var(--tier) 23%,var(--paper)),color-mix(in srgb,var(--tier) 7%,var(--paper-2))); box-shadow:inset 0 1px color-mix(in srgb,var(--tier) 20%,transparent),0 7px 16px rgba(0,0,0,.12); text-align:center; }
+.m img { width:50px; height:50px; border-radius:9px; border:1px solid color-mix(in srgb,var(--tier) 74%,var(--line)); background:var(--paper-2); }
 .m.sel img { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .m .slot { position: absolute; top: -5px; left: 50%; transform: translateX(-50%) translateX(-25px); width: 15px; height: 15px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: .6rem; font-weight: 600; line-height: 15px; font-family: "IBM Plex Mono", monospace; }
 .m .mn { font-size: .72rem; line-height: 1.2; color: var(--ink-soft); }
@@ -165,7 +169,7 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
   background: var(--paper); border: 1px solid color-mix(in srgb,var(--accent) 55%,var(--line));
   border-radius: 13px; box-shadow: 0 24px 60px rgba(0,0,0,.5); font-size: .82rem; color: var(--ink); }
 .mpop .mp-hd { display: flex; align-items: center; gap: .55rem; margin-bottom: .5rem; }
-.mpop .mp-hd img { width: 42px; height: 42px; border-radius: 8px; background: var(--paper-2); flex: none; }
+.mpop .mp-hd img { width:42px; height:42px; padding:2px; border:1px solid color-mix(in srgb,var(--tier,#8f9c97) 72%,var(--line)); border-radius:8px; background:linear-gradient(145deg,color-mix(in srgb,var(--tier,#8f9c97) 22%,var(--paper)),var(--paper-2)); flex:none; }
 .mpop .mp-nm { font-weight: 700; font-size: .95rem; }
 .mpop .mp-sub { font-size: .68rem; color: var(--mute); letter-spacing: .04em; text-transform: uppercase; }
 .mpop .mp-stat { font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--ink-soft); margin-bottom: .35rem; }
@@ -406,7 +410,8 @@ function render(keepPage){
     const masks = types.map((typ,i)=>{
       const info = POOL[typ] || {n:typ,i:'',lv:'',s:[0,0]};
       const sel = state.get(String(typ)) === 'in' ? ' sel':'';
-      return `<div class="m${sel}" data-typ="${typ}" data-lv="${info.lv}"><span class="slot">${i+1}</span>`
+      const tier = (DESC[typ]||{}).q || 'rare';
+      return `<div class="m tier-${tier}${sel}" data-typ="${typ}" data-lv="${info.lv}"><span class="slot">${i+1}</span>`
         + `<img src="${info.i}" alt="${info.n}">`
         + `<span class="mn">${info.n}</span>`
         + (LVL_MIXED ? `<span class="lv">L${info.lv}</span>`:'') + `</div>`;
@@ -434,7 +439,8 @@ function render(keepPage){
           const names = o.map(t=>(POOL[t]||{n:t}).n).join(' · ');
           const ics = o.map(t=>{
             const info = POOL[t] || {i:'',n:t};
-            return `<img src="${info.i}" alt="${info.n}">`;
+            const tier=(DESC[t]||{}).q||'rare';
+            return `<span class="mu-mask tier-${tier}"><img src="${info.i}" alt="${info.n}"></span>`;
           }).join('');
           return `<span class="mu-chip" title="#${oRank}  ${names}"><b>${oWr}%</b>`
             + `<span class="mu-r">#${oRank}</span><span class="mu-ics">${ics}</span></span>`;
@@ -483,7 +489,7 @@ function showMask(cell){
   if (!de) return;
   const p = document.createElement('div'); p.className = 'mpop';
   p.innerHTML =
-      `<div class="mp-hd"><img src="${info.i}" alt=""><div>`
+      `<div class="mp-hd"><img class="tier-${de.q}" src="${info.i}" alt=""><div>`
     + `<div class="mp-nm">${info.n}</div>`
     + `<div class="mp-sub">${de.q} · level ${lv}</div></div></div>`
     + `<div class="mp-stat">Technique ${info.s[0]} · Popularity ${info.s[1]}</div>`
