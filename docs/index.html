@@ -29,9 +29,24 @@
     h1 { margin:0; font:600 clamp(3.9rem,9vw,7.6rem)/.78 "Cormorant Garamond",Georgia,serif; letter-spacing:-.045em; }
     h1 em { display:block; color:var(--gold-pale); font-weight:500; }
     .lede { max-width:590px; margin:2rem 0 0; color:#d2c7c0; font-size:clamp(.98rem,1.5vw,1.12rem); line-height:1.75; }
-    .hero-actions { display:flex; flex-wrap:wrap; align-items:center; gap:.8rem 1.2rem; margin-top:2.1rem; }
-    .cta { flex:1 1 165px; display:inline-flex; align-items:center; justify-content:center; gap:.7rem; padding:.85rem 1.1rem; border:1px solid var(--gold); background:transparent; color:var(--gold-pale); text-decoration:none; font-size:.82rem; font-weight:600; transition:transform .18s ease,background .18s ease,color .18s ease; }
-    .cta:hover { transform:translateY(-2px); background:var(--gold); color:#240a0f; }
+    .hero-actions { width:100%; max-width:620px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; margin-top:2.2rem; }
+    .cta { min-width:0; min-height:104px; position:relative; display:flex; flex-direction:column; justify-content:space-between; gap:1rem; padding:1rem; border:1px solid var(--line); border-radius:10px; background:linear-gradient(145deg,rgba(57,16,24,.72),rgba(27,8,12,.78)); color:var(--ivory); text-decoration:none; text-align:left; box-shadow:0 12px 30px rgba(0,0,0,.12); transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease; }
+    .cta:hover { transform:translateY(-3px); border-color:var(--gold); background:linear-gradient(145deg,rgba(79,22,32,.9),rgba(35,9,15,.92)); box-shadow:0 16px 34px rgba(0,0,0,.22); }
+    .cta:focus-visible { outline:2px solid var(--gold-pale); outline-offset:3px; }
+    .cta-head { display:flex; align-items:center; justify-content:space-between; width:100%; }
+    .cta-icon { width:30px; height:30px; display:grid; place-items:center; border:1px solid var(--line); border-radius:50%; color:var(--gold-pale); background:rgba(211,167,70,.06); }
+    .cta-icon svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+    .cta-arrow { color:var(--muted); font-size:.95rem; transition:color .18s ease,transform .18s ease; }
+    .cta:hover .cta-arrow { color:var(--gold-pale); transform:translate(2px,-2px); }
+    .cta strong { display:block; font:600 1.08rem/1.05 "Cormorant Garamond",Georgia,serif; letter-spacing:.01em; }
+    .cta small { display:block; margin-top:.28rem; color:var(--muted); font-size:.61rem; line-height:1.3; letter-spacing:.08em; text-transform:uppercase; }
+    .cta.mixed .cta-icon { color:#c7a2f5; border-color:rgba(199,162,245,.32); background:rgba(135,88,190,.09); }
+    .cta.codex .cta-icon { color:#84c9ff; border-color:rgba(132,201,255,.3); background:rgba(63,142,204,.08); }
+    .cta.featured { min-height:82px; grid-column:1/-1; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:1rem; padding:1rem 1.15rem; border-color:rgba(211,167,70,.5); background:linear-gradient(100deg,rgba(93,25,36,.9),rgba(45,10,17,.9)); }
+    .cta.featured .cta-icon { width:36px; height:36px; color:#240a0f; border-color:var(--gold); background:var(--gold); }
+    .cta.featured .cta-copy { align-self:center; }
+    .cta.featured strong { font-size:1.2rem; }
+    .cta.featured .cta-arrow { color:var(--gold-pale); font-size:1.2rem; }
     .crest-stage { position:relative; display:grid; place-items:center; isolation:isolate; }
     .crest-stage::before,.crest-stage::after { content:""; position:absolute; border-radius:50%; z-index:-1; }
     .crest-stage::before { width:min(38vw,430px); aspect-ratio:1; border:1px solid var(--line); box-shadow:0 0 0 24px rgba(211,167,70,.025),0 0 0 25px rgba(211,167,70,.09); }
@@ -74,6 +89,15 @@
       .cards { grid-template-columns:1fr; }
       footer { flex-direction:column; }
     }
+    @media (max-width:560px) {
+      .hero-actions { grid-template-columns:1fr; }
+      .cta { min-height:82px; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.9rem; }
+      .cta:not(.featured) .cta-head { display:contents; }
+      .cta:not(.featured) .cta-icon { grid-column:1; grid-row:1; }
+      .cta:not(.featured) .cta-copy { grid-column:2; grid-row:1; align-self:center; }
+      .cta:not(.featured) .cta-arrow { grid-column:3; grid-row:1; }
+      .cta.featured { grid-column:auto; }
+    }
     @media (prefers-reduced-motion:reduce) { .crest { animation:none; } * { scroll-behavior:auto!important; } }
   </style>
 </head>
@@ -88,7 +112,25 @@
         <p class="kicker">The ranking room is open</p>
         <h1>Master the<em>Masquerade.</em></h1>
         <p class="lede">Build a sharper five-mask formation with rankings drawn from the game’s real battle engine—not guesswork. Compare proven lineups, test the masks you own, and step onto the floor prepared.</p>
-        <div class="hero-actions"><a class="cta" href="./gold.html">Enter the gold rankings</a><a class="cta" href="./mixed.html">Enter the mixed rankings</a><a class="cta" href="./masks.html">View mask codex</a><a class="cta" href="./simulation.html">Matchup simulator</a></div>
+        <nav class="hero-actions" aria-label="Masquerade tools">
+          <a class="cta gold" href="./gold.html">
+            <span class="cta-head"><span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 7 3.5 3L12 5l4.5 5L20 7l-1.5 10h-13L4 7Z"/><path d="M7 20h10"/></svg></span><span class="cta-arrow" aria-hidden="true">↗</span></span>
+            <span class="cta-copy"><strong>Gold rankings</strong><small>Legendary · Level 6</small></span>
+          </a>
+          <a class="cta mixed" href="./mixed.html">
+            <span class="cta-head"><span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><circle cx="12" cy="16" r="3"/></svg></span><span class="cta-arrow" aria-hidden="true">↗</span></span>
+            <span class="cta-copy"><strong>Mixed rankings</strong><small>Purple · Blue · Gold</small></span>
+          </a>
+          <a class="cta codex" href="./masks.html">
+            <span class="cta-head"><span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5v-16Z"/></svg></span><span class="cta-arrow" aria-hidden="true">↗</span></span>
+            <span class="cta-copy"><strong>Mask codex</strong><small>Browse all 62 masks</small></span>
+          </a>
+          <a class="cta featured" href="./simulation.html">
+            <span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m14 5 5 5-9 9H5v-5l9-9Z"/><path d="m13 6 5 5"/><path d="m5 5 4 4M4 10l6-6"/></svg></span>
+            <span class="cta-copy"><strong>Matchup simulator</strong><small>Build two lineups · Play the battle</small></span>
+            <span class="cta-arrow" aria-hidden="true">→</span>
+          </a>
+        </nav>
       </div>
       <div class="crest-stage" aria-hidden="true"><img class="crest" src="./assets/masquerade-medal.png" alt=""></div>
     </section>
