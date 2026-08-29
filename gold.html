@@ -110,9 +110,11 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .mu-lbl { font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; width: 4.2rem; flex: none; }
 .mu-lbl.lose { color: var(--bad); }
 .mu-lbl.win { color: var(--accent); }
-.mu-chip { font-size: .74rem; padding: .2rem .5rem; border-radius: 7px; border: 1px solid var(--line); background: var(--chip); }
+.mu-chip { display: inline-flex; align-items: center; gap: .3rem; font-size: .74rem; padding: .25rem .45rem; border-radius: 8px; border: 1px solid var(--line); background: var(--chip); }
 .mu-chip b { font-family: "IBM Plex Mono", monospace; }
-.mu-chip .mu-r { color: var(--mute); font-family: "IBM Plex Mono", monospace; margin-right: .2rem; }
+.mu-chip .mu-r { color: var(--mute); font-family: "IBM Plex Mono", monospace; }
+.mu-chip .mu-ics { display: inline-flex; gap: 2px; }
+.mu-chip .mu-ics img { width: 20px; height: 20px; border-radius: 4px; background: var(--paper-2); display: block; }
 .mu-chip.lose { border-color: var(--bad); background: var(--chip-ex); }
 .mu-chip.win { border-color: var(--accent); background: var(--chip-on); }
 .lineup { display: flex; flex-wrap: wrap; gap: .5rem; }
@@ -282,7 +284,7 @@ function render(){
     d.innerHTML = `<span class="rank">${rank}${mu?'<span class="caret">\u25be</span>':''}</span>`
       + `<span class="wr"><b>${wr.toFixed(2)}</b><span class="pct">%</span>`
       + `<span class="wr-bar"><i style="width:${wr.toFixed(1)}%"></i></span>`
-      + (mu ? `<span class="mu-field" title="avg win rate vs the top-${MCOHORT} field">vs field ${mu.c}%</span>`:'')
+      + (mu ? `<span class="mu-field" title="avg win rate vs the top-${MCOHORT} distinct-set field">vs field ${mu.c}%</span>`:'')
       + `</span>`
       + `<div class="lineup">${masks}</div>`;
     if (mu) {
@@ -293,12 +295,18 @@ function render(){
         d.classList.add('open');
         dr = document.createElement('div'); dr.className = 'drawer';
         const oppChip = ([oRank, oWr])=>{
-          const o = TEAMS[oRank-1] || [0]; const on = o.slice(1).map(t=>(POOL[t]||{n:t}).n).join(' · ');
+          const o = (TEAMS[oRank-1] || [0]).slice(1);
+          const names = o.map(t=>(POOL[t]||{n:t}).n).join(' · ');
+          const ics = o.map(t=>{
+            const info = POOL[t] || {i:'',n:t};
+            return `<img src="${info.i}" alt="${info.n}">`;
+          }).join('');
           const cls = oWr < 45 ? 'lose' : oWr > 55 ? 'win' : 'even';
-          return `<span class="mu-chip ${cls}"><b>${oWr}%</b> <span class="mu-r">#${oRank}</span> ${on}</span>`;
+          return `<span class="mu-chip ${cls}" title="#${oRank}  ${names}"><b>${oWr}%</b>`
+            + `<span class="mu-r">#${oRank}</span><span class="mu-ics">${ics}</span></span>`;
         };
         dr.innerHTML =
-            `<div class="mu-hd">vs the top-${MCOHORT} field — avg <b>${mu.c}%</b>, `
+            `<div class="mu-hd">vs the top-${MCOHORT} distinct mask sets — avg <b>${mu.c}%</b>, `
           + `range ${mu.w}% &ndash; ${mu.b}%</div>`
           + `<div class="mu-grp"><span class="mu-lbl lose">hardest</span>${mu.hard.map(oppChip).join('')}</div>`
           + `<div class="mu-grp"><span class="mu-lbl win">softest</span>${mu.soft.map(oppChip).join('')}</div>`;
