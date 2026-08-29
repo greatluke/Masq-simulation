@@ -112,10 +112,12 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .wr-bar { display: block; height: 4px; border-radius: 3px; background: var(--bar-track); overflow: hidden; margin-top: .3rem; }
 .wr-bar i { display: block; height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); }
 .mu-field { display: block; margin-top: .25rem; font-size: .68rem; color: var(--mute); }
-.row.perm { opacity: .62; }
-.row.perm:hover { opacity: 1; }
-.perm-tag { display: block; margin-top: .15rem; font-size: .58rem; font-weight: 500; font-style: italic;
-  color: var(--mute); white-space: nowrap; letter-spacing: 0; }
+.row.perm .m { opacity: .5; }
+.row.perm:hover .m { opacity: .85; }
+.perm-pill { display: inline-flex; align-items: center; gap: .3rem; align-self: center;
+  font-size: .74rem; font-weight: 600; padding: .22rem .55rem; border-radius: 999px;
+  border: 1px solid var(--accent2); color: var(--ink);
+  background: color-mix(in srgb, var(--accent2) 15%, transparent); white-space: nowrap; }
 .drawer { padding: .8rem 1rem 1rem; background: var(--paper-2); border-bottom: 1px solid var(--line);
   display: grid; grid-template-columns: 1fr 1fr; gap: .55rem 1.4rem; align-items: start; }
 .mu-hd { grid-column: 1 / -1; color: var(--ink-soft); font-size: .8rem; }
@@ -316,12 +318,14 @@ function render(){
         + `<span class="mn">${info.n}</span>`
         + (LVL_MIXED ? `<span class="lv">L${info.lv}</span>`:'') + `</div>`;
     }).join('');
-    d.innerHTML = `<span class="rank">${rank}${mu?'<span class="caret">\u25be</span>':''}${isPerm?`<span class="perm-tag">perm of #${permOf}</span>`:''}</span>`
+    d.innerHTML = `<span class="rank">${rank}${mu?'<span class="caret">\u25be</span>':''}</span>`
       + `<span class="wr"><b>${wr.toFixed(2)}</b><span class="pct">%</span>`
       + `<span class="wr-bar"><i style="width:${wr.toFixed(1)}%"></i></span>`
       + (mu ? `<span class="mu-field" title="avg win rate vs the top-${MCOHORT} distinct-set field">vs field ${mu.c}%</span>`:'')
       + `</span>`
-      + `<div class="lineup">${masks}</div>`;
+      + `<div class="lineup">`
+      + (isPerm ? `<span class="perm-pill" title="same five masks as #${permOf}, different slot order">\u21c4 perm of #${permOf}</span>` : '')
+      + `${masks}</div>`;
     if (mu) {
       d.addEventListener('click', e=>{
         if (e.target.closest('a')) return;
