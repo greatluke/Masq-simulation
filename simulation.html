@@ -263,6 +263,23 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .res-bar .w { background: var(--good); } .res-bar .d { background: var(--mute); } .res-bar .l { background: var(--bad); }
 .res-legend { display: flex; gap: 1.2rem; font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--ink-soft); }
 .res-note { margin-top: .8rem; font-size: .82rem; color: var(--mute); }
+.logs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+.logbox { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.logbox.win { border-color: color-mix(in srgb,var(--good) 45%,var(--line)); }
+.logbox.lose { border-color: color-mix(in srgb,var(--bad) 45%,var(--line)); }
+.logbox > summary { list-style: none; cursor: pointer; padding: .7rem .95rem; font-weight: 700; font-size: .9rem; display: flex; justify-content: space-between; gap: .5rem; }
+.logbox > summary::-webkit-details-marker { display: none; }
+.logbox.win > summary { color: var(--good); } .logbox.lose > summary { color: var(--bad); }
+.logbox .seed { font-family: "IBM Plex Mono", monospace; font-weight: 400; color: var(--mute); font-size: .74rem; }
+.logfeed { max-height: 340px; overflow-y: auto; padding: .3rem .95rem .9rem; font-size: .78rem; line-height: 1.55; border-top: 1px solid var(--line); }
+.logfeed .rd { margin: .7rem 0 .2rem; font-family: "IBM Plex Mono", monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.logfeed .rd:first-child { margin-top: .2rem; }
+.logfeed .ev { padding: .05rem 0; }
+.logfeed .a { color: var(--good); } .logfeed .d { color: var(--bad); }
+.logfeed .ev b { font-weight: 600; }
+.logfeed .k { color: var(--accent); }
+.logfeed .fin { margin-top: .6rem; font-weight: 700; }
+@media (max-width: 760px) { .logs { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .sim-wrap { grid-template-columns: 1fr; } .pal-grid { max-height: 260px; } }
 </style>
 <div class="wrap">
@@ -315,6 +332,7 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
   </div>
 
   <div class="result empty" id="result">Build both lineups and hit <b>Simulate</b>.</div>
+  <div class="logs" id="logs"></div>
 
   <footer>Engine ported from <code>DanceBattleContext</code>; deterministic per seed. Not affiliated with OneMT.</footer>
 </div>
@@ -1453,17 +1471,81 @@ document.querySelector('.sim-tools').addEventListener('click', e=>{
 document.querySelectorAll('.team-tools button[data-act="clear"]').forEach(b=>
   b.onclick = ()=>{ team[b.dataset.side] = [null,null,null,null,null]; renderTeam(b.dataset.side); });
 
+// ---------- battle log instrumentation (wrap engine once; only records when LOG != null) ----------
+let LOG = null;
+function dsc(x) { const m = MASKS[x.maskType]; return { s: (x.team && x.team.teamId) || 0, mt: x.maskType, n: m ? m.n : String(x.maskType), l: x.maskLv, o: x.order, c: !!x.isCall }; }
+(function hook() {
+  const RH = Dancer.prototype.reduceHpValue;
+  Dancer.prototype.reduceHpValue = function(dmg, effect, mult) {
+    const r = RH.call(this, dmg, effect, mult);
+    if (LOG && effect && r && r[1] > 0)
+      LOG.push({ k:'dmg', src: (effect.skill && effect.skill.creater) ? dsc(effect.skill.creater) : null,
+                 tgt: dsc(this), amt: Math.round(r[1]), left: Math.max(0, Math.round(this.hp)),
+                 sk: !!(effect.skill && effect.skill.skillId !== -1) });
+    return r;
+  };
+  const AD = Context.prototype.addDieDancer;
+  Context.prototype.addDieDancer = function(dn, f) { if (LOG) LOG.push({ k:'die', tgt: dsc(dn) }); return AD.call(this, dn, f); };
+  const SE = Skill.prototype.excute;
+  Skill.prototype.excute = function(td, te) { if (LOG && this.skillId !== -1 && this.creater) LOG.push({ k:'skill', src: dsc(this.creater) }); return SE.call(this, td, te); };
+  const AJ = Dancer.prototype.afterJoinTeam;
+  Dancer.prototype.afterJoinTeam = function() { if (LOG && this.isCall) LOG.push({ k:'summon', tgt: dsc(this) }); return AJ.call(this); };
+  const DA = Context.prototype.doAtk;
+  Context.prototype.doAtk = function() { if (LOG) LOG.push({ k:'round', n: (this._battleCount || 0) + 1 }); return DA.call(this); };
+})();
+function battleLog(A, B, seed) { LOG = []; const o = simulate(CFG, A, B, seed); const events = LOG; LOG = null; return { result: o.result, survivorDiff: o.survivorDiff, events }; }
+
+function renderLog(title, cls, seed, r) {
+  const box = document.createElement('details');
+  box.className = 'logbox ' + cls; box.open = (cls === 'win');
+  box.innerHTML = `<summary><span>${title}</span><span class="seed">seed ${seed}</span></summary>`;
+  const feed = document.createElement('div'); feed.className = 'logfeed';
+  const nm = x => x ? `<b>${x.n}</b>${x.c ? ' (summon)' : ''}` : 'a dancer';
+  const side = x => (x && x.s === 1) ? 'a' : 'd';
+  let out = '', curRound = 0, lastRd = -1, count = 0, more = 0;
+  for (const e of r.events) {
+    if (e.k === 'round') { curRound = e.n; continue; }
+    if (count >= 160) { more++; continue; }
+    if (curRound > 0 && curRound !== lastRd) { out += `<div class="rd">round ${curRound}</div>`; lastRd = curRound; }
+    count++;
+    if (e.k === 'dmg') {
+      const eff = e.src && e.sk ? ((MASKS[e.src.mt] || {}).eff || [])[e.src.l - 1] : null;
+      out += `<div class="ev ${side(e.src)}">${nm(e.src)} ${e.sk ? 'skill' : 'hits'} ${nm(e.tgt)} `
+           + `<span class="k">−${e.amt}</span> Pop → ${e.left} left${eff ? ` <span style="color:var(--mute)">· ${eff}</span>` : ''}</div>`;
+    } else if (e.k === 'skill') {
+      const eff = ((MASKS[e.src.mt] || {}).eff || [])[e.src.l - 1] || 'skill fires';
+      out += `<div class="ev ${side(e.src)}">${nm(e.src)} — <span style="color:var(--ink-soft)">${eff}</span></div>`;
+    } else if (e.k === 'summon') {
+      out += `<div class="ev ${side(e.tgt)}">${nm(e.tgt)} joins ${e.tgt.s === 1 ? 'your' : 'the enemy'} line</div>`;
+    } else if (e.k === 'die') {
+      out += `<div class="ev ${e.tgt.s === 1 ? 'd' : 'a'}"><b>${e.tgt.n} is out</b></div>`;
+    }
+  }
+  if (more) out += `<div class="rd">…${more} more events</div>`;
+  const fin = r.result === 1 ? `You win — surviving margin ${r.survivorDiff >= 0 ? '+' : ''}${r.survivorDiff}`
+            : r.result === 2 ? `You lose — surviving margin ${r.survivorDiff}`
+            : `Draw — both lines wiped in the same exchange`;
+  out += `<div class="fin ${r.result === 1 ? 'a' : r.result === 2 ? 'd' : ''}">${fin}</div>`;
+  feed.innerHTML = out || '<div class="ev">no events recorded</div>';
+  box.appendChild(feed);
+  return box;
+}
+
 // ---------- simulate ----------
 document.getElementById('go').onclick = ()=>{
   const A = team.a.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
   const B = team.b.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
-  const res = document.getElementById('result');
+  const res = document.getElementById('result'), logs = document.getElementById('logs');
+  logs.replaceChildren();
   if (A.length < 1 || B.length < 1) { res.className = 'result empty'; res.textContent = 'Both lineups need at least one mask.'; return; }
   const N = +document.getElementById('seeds').value;
-  let w=0, d=0, l=0, marg=0;
+  let w=0, d=0, l=0, marg=0, winSeed=0, lossSeed=0, drawSeed=0;
   for (let k = 1; k <= N; k++) {
-    const o = simulate(CFG, A, B, (k * 2654435761) % 2147483647 + 1);
-    if (o.result === 1) w++; else if (o.result === 2) l++; else d++;
+    const seed = (k * 2654435761) % 2147483647 + 1;
+    const o = simulate(CFG, A, B, seed);
+    if (o.result === 1) { w++; if (!winSeed) winSeed = seed; }
+    else if (o.result === 2) { l++; if (!lossSeed) lossSeed = seed; }
+    else { d++; if (!drawSeed) drawSeed = seed; }
     marg += o.survivorDiff || 0;
   }
   const wr = (w + d/2) / N * 100;
@@ -1475,6 +1557,10 @@ document.getElementById('go').onclick = ()=>{
     + `<div class="res-bar"><i class="w" style="width:${w/N*100}%"></i><i class="d" style="width:${d/N*100}%"></i><i class="l" style="width:${l/N*100}%"></i></div>`
     + `<div class="res-legend"><span style="color:var(--good)">${w} win</span><span style="color:var(--mute)">${d} draw</span><span style="color:var(--bad)">${l} loss</span></div>`
     + `<div class="res-note">avg surviving-body margin ${marg/N>=0?'+':''}${(marg/N).toFixed(2)} (your bodies − theirs at the end). Reorder the slots and re-run — it changes the outcome.</div>`;
+
+  if (winSeed)  logs.appendChild(renderLog('A dance you won',  'win',  winSeed,  battleLog(A, B, winSeed)));
+  if (lossSeed) logs.appendChild(renderLog('A dance you lost', 'lose', lossSeed, battleLog(A, B, lossSeed)));
+  if (!winSeed && !lossSeed && drawSeed) logs.appendChild(renderLog('A drawn dance', 'even', drawSeed, battleLog(A, B, drawSeed)));
 };
 
 renderTeam('a'); renderTeam('b');
