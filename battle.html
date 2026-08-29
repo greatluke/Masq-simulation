@@ -355,8 +355,17 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .live-badge { display:inline-flex; align-items:center; gap:.45rem; padding:.4rem .7rem; border:1px solid color-mix(in srgb,var(--good) 45%,var(--line)); border-radius:999px; color:var(--good); font:600 .67rem "IBM Plex Mono",monospace; letter-spacing:.09em; text-transform:uppercase; }
 .live-badge::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; box-shadow:0 0 0 5px color-mix(in srgb,var(--good) 15%,transparent); animation:pulse 1.8s ease-in-out infinite; }
 .builder { margin-bottom:1.5rem; }
-.builder summary { width:max-content; cursor:pointer; color:var(--ink-soft); font-size:.82rem; padding:.5rem .85rem; border:1px solid var(--line); border-radius:999px; background:var(--chip); }
-.builder[open] summary { margin-bottom:1rem; border-color:var(--accent); color:var(--accent); }
+.builder summary { width:100%; min-height:68px; display:flex; align-items:center; gap:.8rem; cursor:pointer; padding:.75rem .9rem; border:1px solid color-mix(in srgb,var(--accent) 68%,var(--line)); border-radius:14px; background:linear-gradient(100deg,rgba(106,70,23,.28),rgba(45,17,23,.86)); color:var(--ink); box-shadow:0 10px 28px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.025); transition:border-color .16s ease,background .16s ease,transform .16s ease; list-style:none; }
+.builder summary::-webkit-details-marker { display:none; }
+.builder summary:hover { transform:translateY(-1px); border-color:var(--accent); background:linear-gradient(100deg,rgba(132,89,29,.34),rgba(57,19,27,.92)); }
+.builder[open] summary { margin-bottom:1rem; border-color:var(--accent); }
+.builder-mark { width:42px; height:42px; flex:none; display:grid; place-items:center; border:1px solid rgba(241,214,138,.34); border-radius:11px; color:var(--accent); background:rgba(211,167,70,.09); }
+.builder-mark svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.builder-copy { min-width:0; display:flex; flex-direction:column; }
+.builder-copy strong { font:600 1rem "Fraunces",Georgia,serif; }
+.builder-copy small { margin-top:.08rem; color:var(--mute); font-size:.68rem; }
+.builder-toggle { margin-left:auto; width:28px; height:28px; display:grid; place-items:center; border:1px solid var(--line); border-radius:50%; color:var(--accent); transition:transform .2s ease; }
+.builder[open] .builder-toggle { transform:rotate(180deg); }
 .builder .sim-wrap { margin-bottom:.8rem; }
 .builder .team { padding:.85rem; }
 .builder .slots { gap:.35rem; }
@@ -374,7 +383,8 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .stage { position:relative; z-index:2; display:grid; grid-template-rows:1fr 1fr; gap:2.25rem; min-height:470px; padding:2rem clamp(.8rem,3vw,2rem); }
 .formation { display:flex; justify-content:center; align-items:end; gap:clamp(.35rem,1.4vw,1rem); min-width:0; }
 .formation.enemy { align-items:start; }
-.fighter { --side:#72c69a; position:relative; width:min(16.5vw,138px); min-width:0; padding:.6rem .55rem .65rem; border:1px solid color-mix(in srgb,var(--side) 32%,var(--line)); border-radius:16px; background:linear-gradient(155deg,color-mix(in srgb,var(--side) 9%,#2b1720),#160b10); box-shadow:0 14px 26px rgba(0,0,0,.25); transform-origin:center; transition:opacity .32s ease,filter .32s ease,transform .32s ease; }
+.fighter { --side:#72c69a; position:relative; width:min(16.5vw,138px); min-width:0; padding:.6rem .55rem .65rem; border:1px solid color-mix(in srgb,var(--side) 32%,var(--line)); border-radius:16px; background:linear-gradient(155deg,color-mix(in srgb,var(--side) 9%,#2b1720),#160b10); box-shadow:0 14px 26px rgba(0,0,0,.25); transform-origin:center; transition:opacity .32s ease,filter .32s ease,transform .32s ease; cursor:help; }
+.fighter:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
 .formation.enemy .fighter { --side:#ef7d82; }
 .fighter .portrait { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#130a0e; border:1px solid color-mix(in srgb,var(--side) 36%,transparent); }
 .fighter img { display:block; width:100%; height:100%; object-fit:cover; }
@@ -408,6 +418,17 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .float-dmg { position:absolute; z-index:12; left:50%; top:32%; pointer-events:none; color:#fff0b5; font:700 clamp(1rem,2vw,1.45rem) "IBM Plex Mono",monospace; text-shadow:0 2px 8px #000,0 0 18px #d84055; animation:floatup .85s ease-out forwards; }
 .float-dmg.gain { color:#a9f5c9; text-shadow:0 2px 8px #000,0 0 18px #43c985; }
 .float-dmg.tech { top:16%; color:#ffe294; text-shadow:0 2px 8px #000,0 0 18px #d3a746; }
+.mask-tip { position:fixed; z-index:120; width:min(320px,calc(100vw - 1rem)); padding:.85rem .95rem; border:1px solid color-mix(in srgb,var(--accent) 58%,var(--line)); border-radius:13px; background:rgba(28,12,18,.97); color:var(--ink); box-shadow:0 20px 55px rgba(0,0,0,.58); backdrop-filter:blur(16px); pointer-events:none; opacity:0; visibility:hidden; transform:translateY(5px); transition:opacity .12s ease,transform .12s ease,visibility .12s; }
+.mask-tip.show { opacity:1; visibility:visible; transform:none; }
+.mask-tip .tip-top { display:flex; align-items:baseline; justify-content:space-between; gap:.7rem; margin-bottom:.42rem; }
+.mask-tip .tip-name { font:600 1rem "Fraunces",Georgia,serif; }
+.mask-tip .tip-rarity { color:var(--accent); font:600 .58rem "IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+.mask-tip .tip-stats { display:flex; gap:.45rem; margin-bottom:.55rem; }
+.mask-tip .tip-stat { padding:.2rem .42rem; border:1px solid var(--line); border-radius:999px; color:var(--ink-soft); font:500 .65rem "IBM Plex Mono",monospace; }
+.mask-tip .tip-stat.technique { color:#f1d68a; }
+.mask-tip .tip-stat.popularity { color:#8be0ad; }
+.mask-tip .tip-label { margin-bottom:.2rem; color:var(--mute); font:600 .56rem "IBM Plex Mono",monospace; letter-spacing:.13em; text-transform:uppercase; }
+.mask-tip .tip-skill { color:var(--ink-soft); font-size:.76rem; line-height:1.48; }
 .event-toast { position:absolute; z-index:10; left:50%; top:50%; width:min(520px,calc(100% - 2rem)); transform:translate(-50%,-50%); padding:.7rem 1rem; border:1px solid var(--line); border-radius:12px; background:rgba(18,7,12,.88); color:var(--ink-soft); text-align:center; font-size:.78rem; line-height:1.4; box-shadow:0 16px 40px rgba(0,0,0,.38); backdrop-filter:blur(12px); opacity:0; pointer-events:none; }
 .event-toast.show { animation:toast .9s ease both; }
 .event-toast b { color:var(--accent); }
@@ -478,7 +499,7 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
   </header>
 
   <details class="builder" open>
-    <summary>Build or change lineups</summary>
+    <summary><span class="builder-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h7M4 12h10M4 17h6"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/></svg></span><span class="builder-copy"><strong>Build or change lineups</strong><small>Choose masks, levels, and battle order</small></span><span class="builder-toggle" aria-hidden="true">⌄</span></summary>
     <div class="sim-wrap">
       <div class="team a"><h3>Your lineup</h3><div class="sub">front → back, slot 1 to 5</div><div class="slots" id="slots-a"></div><div class="team-tools"><div class="pre" id="pre-a"><button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button><div class="pre-menu"></div></div><button data-act="clear" data-side="a" type="button">clear</button></div></div>
       <div class="team b"><h3>Opponent</h3><div class="sub">front → back, slot 1 to 5</div><div class="slots" id="slots-b"></div><div class="team-tools"><div class="pre" id="pre-b"><button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button><div class="pre-menu"></div></div><button data-act="clear" data-side="b" type="button">clear</button></div></div>
@@ -1781,6 +1802,20 @@ const ui = {
 };
 let playback = null, eventIndex = 0, timer = 0, finishTimer = 0, playing = false, cards = new Map();
 const esc = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const maskTip=document.createElement('aside'); maskTip.id='mask-tip'; maskTip.className='mask-tip'; maskTip.setAttribute('role','tooltip'); document.body.appendChild(maskTip);
+let activeTipCard=null;
+function placeMaskTip(card) {
+  const r=card.el.getBoundingClientRect(), t=maskTip.getBoundingClientRect();
+  const left=Math.max(8,Math.min(innerWidth-t.width-8,r.left+r.width/2-t.width/2));
+  let top=r.top-t.height-10; if(top<8) top=Math.min(innerHeight-t.height-8,r.bottom+10);
+  maskTip.style.left=`${left}px`; maskTip.style.top=`${Math.max(8,top)}px`;
+}
+function showMaskTip(card) {
+  const m=MASKS[String(card.desc.mt)], rarity=m ? m.q : 'summoned', skill=m ? (m.eff[card.desc.l-1]||'No skill description available.') : 'Called partner · no independent mask skill.';
+  maskTip.innerHTML=`<div class="tip-top"><span class="tip-name">${esc(card.desc.n)}</span><span class="tip-rarity">${esc(rarity)} · Lv ${card.desc.l}</span></div><div class="tip-stats"><span class="tip-stat technique">⚔ ${card.technique} Technique</span><span class="tip-stat popularity">${card.hp}/${card.max} Popularity</span></div><div class="tip-label">Mask skill</div><div class="tip-skill">${esc(skill)}</div>`;
+  activeTipCard=card; maskTip.classList.add('show'); requestAnimationFrame(()=>placeMaskTip(card));
+}
+function hideMaskTip(){activeTipCard=null;maskTip.classList.remove('show');}
 function cardFor(desc) { return desc ? cards.get(desc.id) : null; }
 function makeFighter(desc, hp) {
   const m = MASKS[String(desc.mt)] || { i:'./assets/masquerade-medal.png', s:[] }, el = document.createElement('article');
@@ -1788,19 +1823,24 @@ function makeFighter(desc, hp) {
   el.className = 'fighter' + (desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
   el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span><span class="shield-tag" role="img" aria-label="Partner Protection" title="Partner Protection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 20 5v6c0 5.2-3.4 9-8 11-4.6-2-8-5.8-8-11V5l8-3Z"/></svg></span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
   const card = { el, desc:{...desc}, hp, max, technique, anxiety:new Set(), shields:new Set() };
+  el.tabIndex=0; el.setAttribute('aria-describedby','mask-tip');
+  el.addEventListener('mouseenter',()=>showMaskTip(card)); el.addEventListener('mouseleave',hideMaskTip);
+  el.addEventListener('focus',()=>showMaskTip(card)); el.addEventListener('blur',hideMaskTip);
+  el.addEventListener('click',()=>{if(matchMedia('(hover: none)').matches)showMaskTip(card);});
   cards.set(desc.id,card); ui[desc.s === 1 ? 'a' : 'b'].appendChild(el); updateHp(card,hp,false);
   return card;
 }
-function updateTechnique(card, value) { card.technique=Math.max(0,value); card.el.querySelector('.tech-value').textContent=card.technique; }
+function updateTechnique(card, value) { card.technique=Math.max(0,value); card.el.querySelector('.tech-value').textContent=card.technique; if(activeTipCard===card)showMaskTip(card); }
 function updateHp(card, hp, animate=true) {
   card.hp = Math.max(0,hp); card.max = Math.max(card.max,card.hp);
   card.el.querySelector('.hp-text').textContent = `${card.hp}/${card.max}`;
   const fill = card.el.querySelector('.hp-fill'); if (!animate) fill.style.transition = 'none';
   fill.style.width = `${Math.max(0,Math.min(100,card.hp/card.max*100))}%`;
   if (!animate) requestAnimationFrame(()=> fill.style.transition = '');
+  if(activeTipCard===card)showMaskTip(card);
 }
 function resetStage() {
-  stop(); cards.clear(); ui.a.replaceChildren(); ui.b.replaceChildren(); ui.round.textContent = '—'; ui.result.classList.remove('show'); ui.toast.classList.remove('show');
+  stop(); hideMaskTip(); cards.clear(); ui.a.replaceChildren(); ui.b.replaceChildren(); ui.round.textContent = '—'; ui.result.classList.remove('show'); ui.toast.classList.remove('show');
   let id = 0;
   for (const side of ['a','b']) { let order=0; for (const s of team[side].filter(Boolean)) {
     id++; order++; const m = MASKS[String(s.type)], stats=m.s[s.level-1], hp=stats[1];
@@ -1914,6 +1954,8 @@ ui.play.onclick=play; ui.next.onclick=()=>{stop();step(true);}; ui.prev.onclick=
 ui.timeline.onclick=e=>{if(playback)seek(Math.round((e.clientX-ui.timeline.getBoundingClientRect().left)/ui.timeline.clientWidth*playback.frames.length));};
 document.getElementById('replay').onclick=()=>{ui.result.classList.remove('show');seek(0);play();};
 document.getElementById('battle-seed').addEventListener('keydown',e=>{if(e.key==='Enter')prepare(true);});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.fighter'))hideMaskTip();});
+window.addEventListener('scroll',hideMaskTip,true); window.addEventListener('resize',()=>{if(activeTipCard)placeMaskTip(activeTipCard);});
 
 // Give the stage a useful first scene; the builder remains fully editable.
 team.a=PREFILL.find(p=>p.t==='Gold').m.map(([type,level])=>({type:String(type),level}));
