@@ -1510,11 +1510,14 @@ function dsc(x) { const m = MASKS[x.maskType]; return { s: (x.team && x.team.tea
 (function hook() {
   const RH = Dancer.prototype.reduceHpValue;
   Dancer.prototype.reduceHpValue = function(dmg, effect, mult) {
+    const pre = LOG ? LOG.length : 0;
     const r = RH.call(this, dmg, effect, mult);
-    if (LOG && effect && r && r[1] > 0)
+    if (LOG && effect && r && r[1] > 0) {
+      const during = LOG.splice(pre);   // KOs / on-death triggers that cascaded from this hit
       LOG.push({ k:'dmg', src: (effect.skill && effect.skill.creater) ? dsc(effect.skill.creater) : null,
                  tgt: dsc(this), amt: Math.round(r[1]), left: Math.max(0, Math.round(this.hp)),
-                 sk: !!(effect.skill && effect.skill.skillId !== -1) });
+                 sk: !!(effect.skill && effect.skill.skillId !== -1) }, ...during);
+    }
     return r;
   };
   const AD = Context.prototype.addDieDancer;
