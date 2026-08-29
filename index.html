@@ -32,7 +32,8 @@
     .hero-actions { display:flex; flex-wrap:wrap; align-items:center; gap:.8rem 1.2rem; margin-top:2.1rem; }
     .cta { display:inline-flex; align-items:center; gap:.7rem; padding:.85rem 1.1rem; border:1px solid var(--gold); background:var(--gold); color:#240a0f; text-decoration:none; font-size:.82rem; font-weight:600; transition:transform .18s ease,background .18s ease; }
     .cta:hover { transform:translateY(-2px); background:var(--gold-pale); }
-    .text-link { color:var(--muted); font-size:.78rem; text-underline-offset:.3em; }
+    .cta.ghost { background:transparent; color:var(--gold-pale); }
+    .cta.ghost:hover { background:var(--gold); color:#240a0f; }
     .crest-stage { position:relative; display:grid; place-items:center; isolation:isolate; }
     .crest-stage::before,.crest-stage::after { content:""; position:absolute; border-radius:50%; z-index:-1; }
     .crest-stage::before { width:min(38vw,430px); aspect-ratio:1; border:1px solid var(--line); box-shadow:0 0 0 24px rgba(211,167,70,.025),0 0 0 25px rgba(211,167,70,.09); }
@@ -48,7 +49,7 @@
     .section-head { display:flex; align-items:end; justify-content:space-between; gap:2rem; margin-bottom:2rem; }
     h2 { margin:0; font:600 clamp(2.4rem,5vw,4.2rem)/.95 "Cormorant Garamond",serif; }
     .section-head p { max-width:37ch; margin:0; color:var(--muted); font-size:.86rem; line-height:1.6; }
-    .cards { display:grid; grid-template-columns:1.25fr .75fr; gap:1rem; }
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
     .card { min-height:260px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; padding:clamp(1.4rem,3vw,2.1rem); border:1px solid var(--line); background:linear-gradient(145deg,rgba(73,14,25,.83),rgba(31,8,13,.8)); text-decoration:none; transition:border-color .2s ease,transform .2s ease; }
     .card:not(.pending):hover { border-color:var(--gold); transform:translateY(-3px); }
     .card::after { content:""; position:absolute; width:190px; height:190px; right:-68px; bottom:-78px; border:1px solid rgba(211,167,70,.18); border-radius:50%; box-shadow:0 0 0 18px rgba(211,167,70,.03),0 0 0 19px rgba(211,167,70,.09); }
@@ -89,7 +90,7 @@
         <p class="kicker">The ranking room is open</p>
         <h1>Master the<em>Masquerade.</em></h1>
         <p class="lede">Build a sharper five-mask formation with rankings drawn from the game’s real battle engine—not guesswork. Compare proven lineups, test the masks you own, and step onto the floor prepared.</p>
-        <div class="hero-actions"><a class="cta" href="./gold.html">Enter the gold rankings <span aria-hidden="true">→</span></a><a class="text-link" href="#scenarios">View every scenario</a></div>
+        <div class="hero-actions"><a class="cta" href="./gold.html">Enter the gold rankings <span aria-hidden="true">→</span></a><a class="cta ghost" href="#scenarios">View every scenario</a><a class="cta ghost" href="./masks.html">View mask codex</a></div>
       </div>
       <div class="crest-stage" aria-hidden="true"><img class="crest" src="./assets/masquerade-medal.png" alt=""></div>
     </section>
