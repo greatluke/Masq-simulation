@@ -274,6 +274,8 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
   .pre.open::before { content: ""; position: fixed; inset: 0; z-index: 39; background: rgba(0,0,0,.55); pointer-events: none; }
 }
 .sim-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: 1.4rem; }
+.team-save-tools { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem; width:100%; padding-top:.15rem; }
+.team-save-tools select { min-width:10rem; }
 .sim-go { border: 1px solid var(--accent) !important; background: var(--accent) !important; color: #1c1008 !important; font-weight: 700 !important; padding: .5rem 1.3rem !important; }
 .hint { font-size: .74rem; color: var(--mute); margin: -.4rem 0 1.1rem; }
 .result { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.3rem 1.4rem; }
@@ -386,6 +388,14 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
     <button data-act="swap" type="button">swap sides</button>
     <button data-act="copy" type="button">copy Yours → Opp</button>
     <a href="./battle.html">Watch live battle →</a>
+    <span class="team-save-tools" aria-label="Team save tools">
+      <button data-team-act="save" type="button">save team</button>
+      <select id="team-saves" aria-label="Saved teams"><option value="">saved teams…</option></select>
+      <button data-team-act="load" type="button">load</button>
+      <button data-team-act="export" type="button">export</button>
+      <button data-team-act="import" type="button">import</button>
+      <input id="team-file" type="file" accept="application/json,.json" hidden>
+    </span>
   </div>
 
   <div class="result empty" id="result">Build both lineups and hit <b>Simulate</b>.</div>
@@ -1561,6 +1571,44 @@ function slotRow(side, i) {
 function renderTeam(side) {
   document.getElementById('slots-' + side).replaceChildren(...[0,1,2,3,4].map(i=> slotRow(side, i)));
 }
+
+// ---------- team save / import / export ----------
+const TEAM_STORE = 'masquerade.savedTeams.v1';
+function cleanTeam(list) {
+  return (Array.isArray(list) ? list : []).slice(0, 5).map(s => {
+    if (!s || !MASKS[String(s.type)] || ![1,2,3,4,5,6].includes(+s.level)) return null;
+    return { type: String(s.type), level: +s.level };
+  }).concat([null,null,null,null,null]).slice(0, 5);
+}
+function teamSnapshot() { return { a: cleanTeam(team.a), b: cleanTeam(team.b) }; }
+function savedTeams() { try { const x = JSON.parse(localStorage.getItem(TEAM_STORE)); return Array.isArray(x) ? x : []; } catch (_) { return []; } }
+function refreshTeamSaves() {
+  const sel = document.getElementById('team-saves'); if (!sel) return;
+  const current = sel.value; sel.replaceChildren(new Option('saved teams…', ''));
+  savedTeams().forEach((x, i) => sel.appendChild(new Option(x.name || `Team ${i + 1}`, String(i))));
+  if ([...sel.options].some(o => o.value === current)) sel.value = current;
+}
+function teamNotice(text) { const el = document.querySelector('.hint'); if (!el) return; const old = el.textContent; el.textContent = text; el.dataset.teamNotice = '1'; clearTimeout(teamNotice.t); teamNotice.t = setTimeout(() => { if (el.dataset.teamNotice) { el.textContent = old; delete el.dataset.teamNotice; } }, 2600); }
+function applyTeamSnapshot(x) {
+  if (!x || typeof x !== 'object') throw new Error('Expected a team object');
+  const a = x.a || x.yours || x.team; const b = x.b || x.opponent;
+  if (!Array.isArray(a) && !Array.isArray(b)) throw new Error('No lineups found');
+  if (Array.isArray(a)) team.a = cleanTeam(a); if (Array.isArray(b)) team.b = cleanTeam(b);
+  held = null; renderTeam('a'); renderTeam('b');
+}
+function downloadTeam() {
+  const blob = new Blob([JSON.stringify({version:1, exportedAt:new Date().toISOString(), ...teamSnapshot()}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'masquerade-team.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 500);
+}
+refreshTeamSaves();
+document.querySelector('.team-save-tools')?.addEventListener('click', e => {
+  const act = e.target.closest('[data-team-act]')?.dataset.teamAct; if (!act) return;
+  if (act === 'save') { const name = prompt('Name this team:', `Team ${savedTeams().length + 1}`); if (!name || !name.trim()) return; const list = savedTeams().filter(x => x.name !== name.trim()); list.unshift({name:name.trim(), ...teamSnapshot()}); localStorage.setItem(TEAM_STORE, JSON.stringify(list.slice(0, 12))); refreshTeamSaves(); teamNotice(`Saved “${name.trim()}”.`); }
+  if (act === 'load') { const i = +document.getElementById('team-saves').value; const x = savedTeams()[i]; if (!x) return teamNotice('Choose a saved team first.'); applyTeamSnapshot(x); teamNotice(`Loaded “${x.name}”.`); }
+  if (act === 'export') downloadTeam();
+  if (act === 'import') document.getElementById('team-file').click();
+});
+document.getElementById('team-file')?.addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { applyTeamSnapshot(JSON.parse(r.result)); teamNotice(`Imported “${f.name}”.`); } catch (err) { teamNotice('Could not import that team file.'); } e.target.value = ''; }; r.readAsText(f); });
 
 // ---------- prefill / tools ----------
 for (const side of ['a','b']) {
