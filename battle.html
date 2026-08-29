@@ -2038,12 +2038,13 @@ function prepare(autoPlay=true) {
   if(autoPlay){soundCue('start');playOst();}
   if(autoPlay){playing=true;updateTransport();schedule();document.querySelector('.arena').scrollIntoView({behavior:'smooth',block:'center'});}
 }
-document.getElementById('go').onclick=()=>prepare(true);
-ui.play.onclick=play; ui.next.onclick=()=>{stop();step(true);}; ui.prev.onclick=()=>seek(Math.max(0,eventIndex-1));
+document.getElementById('go').onclick=()=>{playOst();prepare(true);};
+ui.play.onclick=()=>{playOst();play();}; ui.next.onclick=()=>{stop();step(true);}; ui.prev.onclick=()=>seek(Math.max(0,eventIndex-1));
+document.addEventListener('pointerdown',()=>{if(soundOn)playOst();},{once:true,passive:true});
 ui.sound.onclick=()=>{setSound(!soundOn);if(soundOn)soundCue('enable');};
 if(!AudioEngine){ui.sound.disabled=true;ui.sound.textContent='Sound unavailable';}
 ui.timeline.onclick=e=>{if(playback)seek(Math.round((e.clientX-ui.timeline.getBoundingClientRect().left)/ui.timeline.clientWidth*playback.frames.length));};
-document.getElementById('replay').onclick=()=>{ui.result.classList.remove('show');seek(0);play();};
+document.getElementById('replay').onclick=()=>{ui.result.classList.remove('show');seek(0);playOst();play();};
 document.getElementById('battle-seed').addEventListener('keydown',e=>{if(e.key==='Enter')prepare(true);});
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('.fighter'))hideMaskTip();});
 window.addEventListener('scroll',hideMaskTip,true); window.addEventListener('resize',()=>{if(activeTipCard)placeMaskTip(activeTipCard);});
