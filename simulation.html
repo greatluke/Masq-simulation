@@ -269,7 +269,13 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .pre-lb { font-family: "IBM Plex Mono", monospace; font-size: .7rem; color: var(--ink-soft); white-space: nowrap; }
 .pre-ics { display: inline-flex; gap: 2px; }
 .pre-ics img { width: 22px; height: 22px; border-radius: 5px; background: var(--paper-2); }
-@media (max-width: 640px) { .pre-menu { grid-template-columns: 1fr; } .pre-col { max-height: 220px; } }
+@media (max-width: 760px) {
+  .pre-menu, .team.b .pre-menu {
+    position: fixed; left: .6rem; right: .6rem; top: 50%; transform: translateY(-50%);
+    width: auto; max-width: none; grid-template-columns: 1fr 1fr; }
+  .pre-col { max-height: 62vh; }
+  .pre.open::before { content: ""; position: fixed; inset: 0; z-index: 39; background: rgba(0,0,0,.55); pointer-events: none; }
+}
 .sim-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: 1.4rem; }
 .sim-go { border: 1px solid var(--accent) !important; background: var(--accent) !important; color: #1c1008 !important; font-weight: 700 !important; padding: .5rem 1.3rem !important; }
 .hint { font-size: .74rem; color: var(--mute); margin: -.6rem 0 .6rem; }
