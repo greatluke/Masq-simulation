@@ -252,6 +252,19 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .team-tools button:hover, .sim-tools button:hover { border-color: var(--accent); color: var(--accent); }
 .team-tools select, .sim-tools select { font: inherit; font-size: .76rem; background: var(--chip); color: var(--ink);
   border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; max-width: 100%; }
+.pre { position: relative; display: inline-block; }
+.pre-btn { font: inherit; font-size: .76rem; padding: .3rem .7rem; border-radius: 999px; border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
+.pre-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pre-menu { position: absolute; z-index: 40; left: 0; top: calc(100% + 4px); width: 288px; max-height: 320px; overflow-y: auto;
+  background: var(--paper); border: 1px solid var(--accent); border-radius: 12px; padding: .3rem; display: none;
+  box-shadow: 0 18px 44px rgba(0,0,0,.45); }
+.pre.open .pre-menu { display: block; }
+.pre-item { display: flex; align-items: center; justify-content: space-between; gap: .6rem; width: 100%; text-align: left;
+  background: none; border: 0; color: var(--ink); font: inherit; padding: .4rem .5rem; border-radius: 8px; cursor: pointer; }
+.pre-item:hover { background: var(--chip-on); }
+.pre-lb { font-family: "IBM Plex Mono", monospace; font-size: .7rem; color: var(--ink-soft); flex: none; white-space: nowrap; }
+.pre-ics { display: inline-flex; gap: 2px; }
+.pre-ics img { width: 24px; height: 24px; border-radius: 5px; background: var(--paper-2); }
 .sim-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-bottom: 1.4rem; }
 .sim-go { border: 1px solid var(--accent) !important; background: var(--accent) !important; color: #1c1008 !important; font-weight: 700 !important; padding: .5rem 1.3rem !important; }
 .hint { font-size: .74rem; color: var(--mute); margin: -.6rem 0 .6rem; }
@@ -318,7 +331,10 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
         <h3>Your lineup</h3><div class="sub">front → back, slot 1 to 5</div>
         <div class="slots" id="slots-a"></div>
         <div class="team-tools">
-          <select id="pre-a"><option value="">prefill from ranked…</option></select>
+          <div class="pre" id="pre-a">
+            <button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button>
+            <div class="pre-menu"></div>
+          </div>
           <button data-act="clear" data-side="a" type="button">clear</button>
         </div>
       </div>
@@ -326,7 +342,10 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
         <h3>Opponent</h3><div class="sub">front → back, slot 1 to 5</div>
         <div class="slots" id="slots-b"></div>
         <div class="team-tools">
-          <select id="pre-b"><option value="">prefill from ranked…</option></select>
+          <div class="pre" id="pre-b">
+            <button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button>
+            <div class="pre-menu"></div>
+          </div>
           <button data-act="clear" data-side="b" type="button">clear</button>
         </div>
       </div>
@@ -1507,13 +1526,21 @@ function renderTeam(side) {
 
 // ---------- prefill / tools ----------
 for (const side of ['a','b']) {
-  const s = document.getElementById('pre-' + side);
-  PREFILL.forEach((p, idx)=>{ const o = document.createElement('option'); o.value = idx; o.textContent = p.g; s.appendChild(o); });
-  s.onchange = ()=>{
-    if (s.value === '') return;
-    team[side] = PREFILL[+s.value].m.map(([type, level])=> ({ type: String(type), level }));
-    s.value = ''; renderTeam(side);
-  };
+  const box = document.getElementById('pre-' + side);
+  const btn = box.querySelector('.pre-btn'), menu = box.querySelector('.pre-menu');
+  PREFILL.forEach((p, idx)=>{
+    const it = document.createElement('button');
+    it.type = 'button'; it.className = 'pre-item';
+    it.innerHTML = `<span class="pre-lb">${p.g}</span><span class="pre-ics">`
+      + p.m.map(([t])=> `<img src="${(MASKS[String(t)]||{}).i}" alt="">`).join('') + `</span>`;
+    it.onclick = ()=>{
+      team[side] = p.m.map(([type, level])=> ({ type: String(type), level }));
+      box.classList.remove('open'); renderTeam(side);
+    };
+    menu.appendChild(it);
+  });
+  btn.onclick = ()=>{ document.querySelectorAll('.pre.open').forEach(x=> x!==box && x.classList.remove('open')); box.classList.toggle('open'); };
+  document.addEventListener('click', e=>{ if (!box.contains(e.target)) box.classList.remove('open'); });
 }
 document.querySelector('.sim-tools').addEventListener('click', e=>{
   const b = e.target.closest('button[data-act]'); if (!b) return;
