@@ -381,10 +381,16 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 .fighter .lvtag { position:absolute; top:.35rem; right:.35rem; padding:.15rem .35rem; border-radius:999px; background:rgba(10,4,7,.78); color:#fff; font:600 .56rem "IBM Plex Mono",monospace; backdrop-filter:blur(6px); }
 .fighter .tech-tag { position:absolute; z-index:2; top:.35rem; left:.35rem; display:inline-flex; align-items:center; gap:.2rem; min-height:20px; padding:.15rem .35rem; border-radius:999px; background:rgba(10,4,7,.82); color:#f1d68a; font:600 .56rem "IBM Plex Mono",monospace; backdrop-filter:blur(6px); }
 .fighter .tech-tag svg { width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
-.fighter .anxiety-tag { display:none; position:absolute; z-index:3; left:50%; bottom:.35rem; transform:translateX(-50%); padding:.14rem .36rem; border:1px solid rgba(207,157,255,.6); border-radius:999px; background:rgba(57,20,82,.88); color:#ead4ff; font:700 .46rem "IBM Plex Mono",monospace; letter-spacing:.08em; }
+.fighter .anxiety-tag { display:none; position:absolute; z-index:3; left:.35rem; bottom:.35rem; padding:.14rem .36rem; border:1px solid rgba(207,157,255,.6); border-radius:999px; background:rgba(57,20,82,.88); color:#ead4ff; font:700 .46rem "IBM Plex Mono",monospace; letter-spacing:.08em; }
+.fighter .shield-tag { display:none; position:absolute; z-index:4; right:.35rem; bottom:.35rem; padding:.14rem .36rem; border:1px solid rgba(164,226,255,.72); border-radius:999px; background:rgba(18,68,96,.9); color:#d9f4ff; font:700 .46rem "IBM Plex Mono",monospace; letter-spacing:.06em; }
 .fighter.anxious { border-color:#bd74f1; box-shadow:0 0 0 2px rgba(189,116,241,.18),0 0 30px rgba(128,54,184,.42); animation:anxiety 1.35s ease-in-out infinite; }
 .fighter.anxious .portrait::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 75%,rgba(183,104,244,.08),rgba(88,26,129,.46)); mix-blend-mode:screen; pointer-events:none; }
 .fighter.anxious .anxiety-tag { display:block; }
+.fighter.shielded::before { content:""; position:absolute; z-index:3; inset:-5px; border:2px solid rgba(147,221,255,.72); border-radius:20px; box-shadow:inset 0 0 20px rgba(102,197,242,.18),0 0 24px rgba(79,183,232,.34); pointer-events:none; animation:shieldidle 1.8s ease-in-out infinite; }
+.fighter.shielded .portrait { box-shadow:inset 0 0 24px rgba(124,215,255,.25); }
+.fighter.shielded .shield-tag { display:block; }
+.fighter.shield-pop { animation:shieldpop .72s ease; }
+.fighter.shield-hit::before { animation:shieldhit .55s ease; }
 .fighter .fname { display:block; margin:.5rem 0 .32rem; overflow:hidden; color:var(--ink); font-size:clamp(.62rem,1.1vw,.78rem); font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
 .hp-row { display:flex; justify-content:space-between; gap:.3rem; color:var(--mute); font:500 .55rem "IBM Plex Mono",monospace; }
 .hp-track { height:6px; margin-top:.25rem; overflow:hidden; border-radius:9px; background:#090507; }
@@ -434,6 +440,9 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
 @keyframes hpdeduct { 35% { border-color:#ef6174; box-shadow:0 0 0 3px rgba(239,97,116,.18),0 0 34px rgba(213,45,74,.42); filter:saturate(1.35) brightness(.78); } }
 @keyframes techpulse { 45% { color:#fff; background:#a57723; box-shadow:0 0 20px #d3a746; transform:scale(1.18); } }
 @keyframes anxiety { 50% { box-shadow:0 0 0 3px rgba(189,116,241,.1),0 0 40px rgba(128,54,184,.58); } }
+@keyframes shieldidle { 50% { opacity:.58; box-shadow:inset 0 0 30px rgba(102,197,242,.28),0 0 34px rgba(79,183,232,.48); } }
+@keyframes shieldpop { 35% { filter:brightness(1.45); box-shadow:0 0 0 8px rgba(126,216,255,.16),0 0 46px rgba(79,183,232,.62); transform:scale(1.04); } }
+@keyframes shieldhit { 35% { opacity:1; border-color:#fff; box-shadow:inset 0 0 36px rgba(180,235,255,.62),0 0 52px rgba(105,205,255,.92); transform:scale(1.08); } }
 @keyframes summon { from { opacity:0; transform:translateY(28px) scale(.75); filter:blur(6px); } }
 @keyframes floatup { to { opacity:0; transform:translate(-50%,-55px) scale(1.15); } from { transform:translate(-50%,0); } }
 @keyframes toast { 0%,100% { opacity:0; transform:translate(-50%,-42%); } 16%,76% { opacity:1; transform:translate(-50%,-50%); } }
@@ -458,7 +467,7 @@ body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),trans
   .transport select { min-width:0; }
   .statusline { width:100%; margin-left:0; }
 }
-@media (prefers-reduced-motion:reduce) { .live-badge::before,.fighter,.float-dmg,.event-toast,.result-card { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+@media (prefers-reduced-motion:reduce) { .live-badge::before,.fighter,.float-dmg,.event-toast,.result-card { animation-duration:.01ms!important; transition-duration:.01ms!important; } .fighter.shielded::before { animation:none!important; } }
 </style>
 <div class="wrap">
   <a class="backlink" href="./index.html"><span aria-hidden="true">←</span> Masquerade atelier</a>
@@ -1732,9 +1741,23 @@ function dsc(x) { const m = MASKS[x.maskType]; return { id:x.dancerAutoId, s:(x.
     return r;
   };
   const SA = State.prototype.attach;
-  State.prototype.attach = function(dn) { const r = SA.call(this, dn); if (LOG && r && this.stateCfg && this.stateCfg.type === STATE_TYPE.Weak) LOG.push({ k:'anxiety', tgt:dsc(dn), v:this.stateCfg.type_param, sid:this.stateAutoId }); return r; };
+  State.prototype.attach = function(dn) {
+    const r = SA.call(this, dn);
+    if (LOG && r && this.stateCfg) {
+      if (this.stateCfg.type === STATE_TYPE.Weak) LOG.push({ k:'anxiety', tgt:dsc(dn), v:this.stateCfg.type_param, sid:this.stateAutoId });
+      else if (this.stateCfg.type === STATE_TYPE.Immune) LOG.push({ k:'shield', tgt:dsc(dn), sid:this.stateAutoId });
+    }
+    return r;
+  };
   const SD = State.prototype.detach;
-  State.prototype.detach = function(cover) { const dn=this.target, weak=!!(this.stateCfg && this.stateCfg.type === STATE_TYPE.Weak), sid=this.stateAutoId; const r=SD.call(this,cover); if (LOG && r && weak && dn) LOG.push({ k:'anxiety_end', tgt:dsc(dn), sid }); return r; };
+  State.prototype.detach = function(cover) {
+    const dn=this.target, type=this.stateCfg&&this.stateCfg.type, sid=this.stateAutoId, r=SD.call(this,cover);
+    if (LOG && r && dn) {
+      if (type===STATE_TYPE.Weak) LOG.push({ k:'anxiety_end', tgt:dsc(dn), sid });
+      else if (type===STATE_TYPE.Immune) LOG.push({ k:'shield_end', tgt:dsc(dn), sid });
+    }
+    return r;
+  };
   const AD = Context.prototype.addDieDancer;
   Context.prototype.addDieDancer = function(dn, f) { if (LOG) LOG.push({ k:'die', tgt: dsc(dn) }); return AD.call(this, dn, f); };
   const SE = Skill.prototype.excute;
@@ -1762,8 +1785,8 @@ function makeFighter(desc, hp) {
   const m = MASKS[String(desc.mt)] || { i:'./assets/masquerade-medal.png', s:[] }, el = document.createElement('article');
   const stats = m.s[desc.l-1] || [], max = Math.max(1,desc.p || stats[1] || hp || 1), technique = Math.max(0,desc.a ?? stats[0] ?? 0);
   el.className = 'fighter' + (desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
-  el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
-  const card = { el, desc:{...desc}, hp, max, technique, anxiety:new Set() };
+  el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="tech-tag" title="Technique"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 19 1l4 4-4.5 4.5M13 7l4 4M11 9 3 17l-2 6 6-2 8-8"/></svg><span class="tech-value">${technique}</span></span><span class="lvtag">Lv ${desc.l}</span><span class="anxiety-tag">Anxiety</span><span class="shield-tag">Protection</span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
+  const card = { el, desc:{...desc}, hp, max, technique, anxiety:new Set(), shields:new Set() };
   cards.set(desc.id,card); ui[desc.s === 1 ? 'a' : 'b'].appendChild(el); updateHp(card,hp,false);
   return card;
 }
@@ -1808,8 +1831,8 @@ function applyEvent(e, animate=true) {
     if (animate) ui.status.textContent = `${e.src ? e.src.n : 'An effect'} ${e.sk?'casts at':'hits'} ${e.tgt.n} for ${e.amt} Popularity.`;
   } else if (e.k === 'block') {
     if (src && animate && !e.sk) animateClass(src.el,e.src.s===1?'hit-a':'hit-b',420);
-    if (tgt && animate) animateClass(tgt.el,'skill');
-    if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> blocks the hit`);
+    if (tgt && animate) animateClass(tgt.el,tgt.el.classList.contains('shielded')?'shield-hit':'skill',580);
+    if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> · Partner Protection blocks the hit`);
   } else if (e.k === 'stat') {
     if (tgt) {
       if (e.hp > 0) { updateHp(tgt,e.left,animate); if (animate) { animateClass(tgt.el,'hp-buff',720); const f=document.createElement('span'); f.className='float-dmg gain'; f.textContent=`+${e.hp}`; tgt.el.appendChild(f); setTimeout(()=>f.remove(),900); } }
@@ -1821,6 +1844,11 @@ function applyEvent(e, animate=true) {
     if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> gains Anxiety · +${e.v} damage taken`);
   } else if (e.k === 'anxiety_end') {
     if (tgt) { tgt.anxiety.delete(e.sid); if (!tgt.anxiety.size) tgt.el.classList.remove('anxious'); }
+  } else if (e.k === 'shield') {
+    if (tgt) { tgt.shields.add(e.sid); tgt.el.classList.add('shielded'); if (animate) animateClass(tgt.el,'shield-pop',760); }
+    if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> gains Partner Protection`);
+  } else if (e.k === 'shield_end') {
+    if (tgt) { tgt.shields.delete(e.sid); if (!tgt.shields.size) tgt.el.classList.remove('shielded'); }
   } else if (e.k === 'die') {
     if (tgt) { updateHp(tgt,0,animate); tgt.el.classList.add('ko'); }
     if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> leaves the floor`);
