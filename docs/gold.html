@@ -60,12 +60,12 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .filter-status { font-family: "IBM Plex Mono", monospace; font-size: .82rem; color: var(--ink-soft); }
 .filter-clear { margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft); font: inherit; font-size: .8rem; padding: .25rem .7rem; cursor: pointer; }
 .filter-clear:hover { border-color: var(--accent); color: var(--accent); }
-.chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: .9rem 1.6rem; padding: .4rem .2rem 0; }
-.chip { position: relative; display: flex; align-items: center; gap: .5rem; padding: .4rem .5rem; border: 1px solid var(--line); border-radius: 10px; background: var(--chip); font-size: .82rem; text-align: left; color: var(--ink); overflow: visible; }
+.chips { display: grid; grid-template-columns: repeat(auto-fill,minmax(172px,1fr)); gap: 1rem 1.6rem; padding: .5rem .2rem 0; }
+.chip { position: relative; display: flex; align-items: center; gap: .55rem; padding: .45rem .55rem; border: 1px solid var(--line); border-radius: 11px; background: var(--chip); font-size: .82rem; text-align: left; color: var(--ink); overflow: visible; }
 .chip[data-state="in"] { background: var(--chip-on); border-color: var(--accent); font-weight: 600; }
 .chip[data-state="ex"] { background: var(--chip-ex); border-color: var(--bad); }
 .chip[data-state="ex"] .cn { text-decoration: line-through; opacity: .7; }
-.chip img { width: 30px; height: 30px; border-radius: 7px; flex: none; background: var(--paper-2); }
+.chip img { width: 40px; height: 40px; border-radius: 8px; flex: none; background: var(--paper-2); }
 .chip[data-state="ex"] img { filter: grayscale(1) opacity(.55); }
 .chip .cn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chip .cs { font-family: "IBM Plex Mono", monospace; font-size: .66rem; color: var(--mute); flex: none; margin-left: auto; }
@@ -84,6 +84,13 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .fopt { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; color: var(--ink-soft); }
 .fopt input { accent-color: var(--accent); cursor: pointer; }
 .fopt-sub { color: var(--mute); }
+/* prominent dedup toggle */
+.dedup-box { display: flex; gap: .7rem; align-items: flex-start; margin: .2rem 0 1rem; padding: .7rem .85rem;
+  border: 1px solid var(--accent); border-radius: 11px; background: var(--chip-on); cursor: pointer; }
+.dedup-box input { width: 18px; height: 18px; margin-top: .1rem; accent-color: var(--accent); flex: none; cursor: pointer; }
+.dedup-box .dt { font-weight: 700; font-size: .92rem; color: var(--ink); }
+.dedup-box .dd { font-size: .8rem; color: var(--ink-soft); margin-top: .15rem; }
+.dedup-box .dd b { font-family: "IBM Plex Mono", monospace; }
 .flegend .i { color: var(--accent); }
 .flegend .e { color: var(--bad); }
 
@@ -171,8 +178,16 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
       <span><b class="e">&times;</b> ban</span>
       <span>rank <b>#</b> = position in the full ranking</span>
       <span>click a row for its hard / soft matchups</span>
-      <label class="fopt"><input type="checkbox" id="dedup"> best ordering only <span class="fopt-sub">(one row per mask set)</span></label>
     </div>
+    <label class="dedup-box">
+      <input type="checkbox" id="dedup" checked>
+      <span>
+        <span class="dt">Best ordering only</span>
+        <span class="dd">One row per unique 5&#8209;mask set &mdash; its highest&#8209;ranked slot arrangement.
+        The engine is order&#8209;sensitive, so the same five masks appear many times at slightly different win rates;
+        this collapses them. Uncheck to see <b>every</b> ordering.</span>
+      </span>
+    </label>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -225,7 +240,7 @@ Object.entries(POOL).sort((a,b)=> b[1].f - a[1].f).forEach(([typ,info])=>{
   chipsEl.appendChild(c);
 });
 
-document.getElementById('clear').onclick = ()=>{ state.clear(); document.getElementById('dedup').checked = false; render(); };
+document.getElementById('clear').onclick = ()=>{ state.clear(); document.getElementById('dedup').checked = true; render(); };
 document.getElementById('dedup').onchange = render;
 
 function render(){
