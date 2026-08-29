@@ -13,9 +13,11 @@ draws = ½).
 
 Each page embeds every ranked finalist and filters client-side to teams that
 contain a chosen set of masks (up to 5); it renders at most 100 rows. The
-polished 320px mask set lives under `assets/masks`, while the site emblem is
-`assets/masquerade-medal.png` (both are mirrored under `docs/assets`). Only
-Google Fonts is external.
+polished 320px mask set lives under `assets/masks`: 15 legendary masks at the
+directory root, 26 epic masks under `assets/masks/epic`, and 21 rare masks
+under `assets/masks/rare`. The site emblem is `assets/masquerade-medal.png`.
+Everything is mirrored under `docs/assets` for GitHub Pages; only Google Fonts
+is external.
 
 The same files are mirrored under `docs/` so GitHub Pages works from either
 **`/ (root)`** or **`/docs`**. `.nojekyll` is present in both.
