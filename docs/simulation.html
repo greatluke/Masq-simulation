@@ -1462,10 +1462,12 @@ Object.entries(MASKS).sort((a,b)=> a[1].n.localeCompare(b[1].n)).forEach(([t, m]
   b.dataset.hay = (m.n + ' ' + m.eff.join(' ') + ' ' + (m.x ? 'conflicts ' + m.x : '')).toLowerCase();
   b.innerHTML = `<img src="${m.i}" alt=""><span class="pk-n">${m.n}</span><span class="pk-m">T${m.s[5][0]} P${m.s[5][1]}</span>`;
   b.onclick = ()=>{
-    if (!pkTarget) return;
-    const cur = team[pkTarget.side][pkTarget.i];
-    team[pkTarget.side][pkTarget.i] = { type: t, level: cur ? cur.level : 6 };
-    closePicker(); renderTeam(pkTarget.side);
+    if (!pkTarget || b.disabled) return;
+    const tgt = pkTarget;
+    const cur = team[tgt.side][tgt.i];
+    team[tgt.side][tgt.i] = { type: t, level: cur ? cur.level : 6 };
+    closePicker();
+    renderTeam(tgt.side);
   };
   pkColEls[m.q].appendChild(b);
 });
