@@ -190,6 +190,16 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .list-head { backdrop-filter: blur(16px); background: color-mix(in srgb,var(--ground) 88%,transparent); }
 #list { overflow: hidden; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 16px 16px; }
 .row:last-child { border-bottom: 0; }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem 1rem;
+  border: 1px solid var(--line); border-radius: 12px; padding: .7rem 1rem; margin-top: .7rem; }
+.pager:empty { display: none; }
+.pager button { font: inherit; font-size: .8rem; padding: .35rem .9rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
+.pager button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.pager button:disabled { opacity: .35; cursor: not-allowed; }
+.pager .pg-mid { font-size: .82rem; color: var(--ink-soft); font-family: "IBM Plex Mono", monospace; }
+.pager .pg-mid input { width: 3.4rem; background: var(--chip); border: 1px solid var(--line); border-radius: 7px;
+  color: var(--ink); font: inherit; font-size: .8rem; padding: .2rem .4rem; text-align: center; }
 .chip,.filter-clear,.dedup-box,.row { transition: border-color .16s ease,background .16s ease,transform .16s ease; }
 .chip:hover { border-color: color-mix(in srgb,var(--accent) 65%,var(--line)); transform: translateY(-1px); }
 .filter-clear { padding: .4rem .8rem; border-radius: 999px; }
