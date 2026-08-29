@@ -231,8 +231,11 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .team .sub { font-size: .72rem; color: var(--mute); margin-bottom: .7rem; }
 .slots { display: flex; flex-direction: column; gap: .5rem; }
 .slot { display: grid; grid-template-columns: 1.4rem 46px 1fr auto; gap: .5rem; align-items: center;
-  border: 1px solid var(--line); border-radius: 10px; padding: .35rem .5rem; background: var(--chip); min-height: 58px; }
+  border: 1px solid var(--line); border-radius: 10px; padding: .35rem .5rem; background: var(--chip); min-height: 58px; cursor: pointer; }
 .slot.empty { border-style: dashed; color: var(--mute); }
+.slot .ctl { display: inline-flex; align-items: center; gap: 4px; }
+.slot .grip { cursor: grab; color: var(--mute); font-size: 1rem; padding: 0 .1rem; user-select: none; }
+.slot .pick { cursor: pointer; }
 .slot.sel { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent); }
 .slot.drop { border-color: var(--accent); background: var(--chip-on); }
 .slot .sn { font-family: "IBM Plex Mono", monospace; color: var(--mute); font-size: .8rem; text-align: center; }
@@ -1377,7 +1380,9 @@ for (const t of order) {
   el.innerHTML = `<img src="${m.i}" alt=""><div><div class="pn">${m.n}</div>`
     + `<div class="pm">${m.q} · T${l6[0]} P${l6[1]}</div><div class="pe">${m.eff[5]}</div></div>`;
   el.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', JSON.stringify({from:'pal', t})));
-  el.addEventListener('click', ()=> placeFromPalette(t));
+  let px = 0, py = 0;
+  el.addEventListener('pointerdown', e=>{ px = e.clientX; py = e.clientY; });
+  el.addEventListener('pointerup', e=>{ if (Math.abs(e.clientX-px) < 8 && Math.abs(e.clientY-py) < 8) placeFromPalette(t); });
   pgrid.appendChild(el);
 }
 function filterPalette() {
@@ -1428,20 +1433,36 @@ function badPlace(side, type, skipIdx) {
 }
 function placeFromPalette(t) {
   let tgt = sel;
-  if (!tgt) { const i = team.a.findIndex(x=> !x); tgt = i >= 0 ? {side:'a', i} : {side:'a', i:4}; }
+  if (!tgt) {
+    const i = team.a.findIndex(x=> !x);
+    if (i < 0) { flash('Tap a slot first to choose where this goes.'); return; }
+    tgt = { side:'a', i };
+  }
   const bad = badPlace(tgt.side, t, tgt.i);
   if (bad) { flash(bad.why); return; }
   const cur = team[tgt.side][tgt.i];
   team[tgt.side][tgt.i] = { type: t, level: cur ? cur.level : 6 };
-  renderTeam(tgt.side);
+  const next = team[tgt.side].findIndex(x=> !x);
+  sel = next >= 0 ? { side: tgt.side, i: next } : null;   // hop to the next empty slot
+  renderTeam('a'); renderTeam('b');
 }
 function payload(e) { try { return JSON.parse(e.dataTransfer.getData('text/plain')); } catch(_) { return null; } }
 
+function selectSlot(side, i) {
+  sel = (sel && sel.side === side && sel.i === i) ? null : { side, i };
+  renderTeam('a'); renderTeam('b');
+}
 function slotRow(side, i) {
   const s = team[side][i];
   const el = document.createElement('div');
   el.className = 'slot' + (s ? '' : ' empty') + (sel && sel.side===side && sel.i===i ? ' sel' : '');
-  el.addEventListener('click', ()=>{ sel = {side, i}; renderTeam('a'); renderTeam('b'); });
+  // robust tap-to-select: ignore if the pointer moved (that's a drag or a scroll)
+  let px = 0, py = 0;
+  el.addEventListener('pointerdown', e=>{ px = e.clientX; py = e.clientY; });
+  el.addEventListener('pointerup', e=>{
+    if (e.target.closest('.lv, .rm, .grip')) return;
+    if (Math.abs(e.clientX - px) < 8 && Math.abs(e.clientY - py) < 8) selectSlot(side, i);
+  });
   el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drop'); });
   el.addEventListener('dragleave', ()=> el.classList.remove('drop'));
   el.addEventListener('drop', e=>{
@@ -1465,20 +1486,19 @@ function slotRow(side, i) {
   });
 
   if (!s) {
-    el.innerHTML = `<span class="sn">${i+1}</span><span></span><span class="pick">drop a mask here, or tap to select</span><span></span>`;
+    el.innerHTML = `<span class="sn">${i+1}</span><span></span>`
+      + `<span class="pick">tap to select, then pick a mask — or drag one in</span><span></span>`;
     return el;
   }
   const m = MASKS[s.type];
   const lv = [1,2,3,4,5,6].map(l=>`<button data-l="${l}"${l===s.level?' class="on"':''}>${l}</button>`).join('');
   el.innerHTML = `<span class="sn">${i+1}</span>`
-    + `<img src="${m.i}" alt="" draggable="true">`
+    + `<img src="${m.i}" alt="">`
     + `<button class="pick" type="button">${m.n} <span style="color:var(--mute);font-size:.72rem">${m.q} · T${m.s[s.level-1][0]} P${m.s[s.level-1][1]}</span></button>`
-    + `<span class="lv">${lv}</span><button class="rm" title="remove">×</button>`;
-  const img = el.querySelector('img');
-  img.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', JSON.stringify({from:'slot', side, i})));
-  el.querySelector('.rm').addEventListener('click', e=>{ e.stopPropagation(); team[side][i] = null; renderTeam(side); });
+    + `<span class="ctl"><span class="lv">${lv}</span><span class="grip" draggable="true" title="drag to move / swap">⠿</span><button class="rm" title="remove">×</button></span>`;
+  el.querySelector('.grip').addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', JSON.stringify({from:'slot', side, i})));
+  el.querySelector('.rm').addEventListener('click', e=>{ e.stopPropagation(); team[side][i] = null; if (sel && sel.side===side && sel.i===i) sel = null; renderTeam(side); });
   el.querySelectorAll('.lv button').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); s.level = +b.dataset.l; renderTeam(side); }));
-  el.querySelector('.pick').addEventListener('click', e=>{ e.stopPropagation(); sel = {side, i}; renderTeam('a'); renderTeam('b'); });
   return el;
 }
 function renderTeam(side) {
