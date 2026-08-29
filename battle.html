@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Battle Simulator · Masquerade</title>
+<title>Live Battle · Masquerade</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#16070b">
-<meta name="description" content="Run your Dance Battle lineup against any opponent on the client's real engine.">
+<meta name="description" content="Watch two Masquerade lineups dance through a deterministic, animated battle in real time.">
 <link rel="icon" type="image/png" href="./assets/masquerade-medal.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -243,10 +243,9 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .slot .grip.on { color: var(--accent); border-color: var(--accent); background: var(--chip-on); }
 .slot .rm:hover { color: var(--bad); border-color: var(--bad); }
 .team-tools { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
-.team-tools button, .sim-tools button, .sim-tools a { font: inherit; font-size: .76rem; padding: .3rem .7rem; border-radius: 999px;
+.team-tools button, .sim-tools button { font: inherit; font-size: .76rem; padding: .3rem .7rem; border-radius: 999px;
   border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
-.sim-tools a { text-decoration:none; }
-.team-tools button:hover, .sim-tools button:hover, .sim-tools a:hover { border-color: var(--accent); color: var(--accent); }
+.team-tools button:hover, .sim-tools button:hover { border-color: var(--accent); color: var(--accent); }
 .sim-tools select { font: inherit; font-size: .76rem; background: var(--chip); color: var(--ink);
   border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; max-width: 100%; }
 .pre { position: relative; display: inline-block; }
@@ -346,52 +345,143 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
   .pk-opt .pk-n { white-space: normal; }
 }
 </style>
+<style>
+html { scroll-behavior: smooth; }
+body { background: radial-gradient(circle at 50% -12rem,rgba(181,42,69,.3),transparent 36rem),radial-gradient(circle at 8% 58%,rgba(64,128,178,.1),transparent 30rem),var(--ground); }
+.wrap { max-width: 1280px; }
+.live-head { display:grid; grid-template-columns:1fr auto; align-items:end; gap:2rem; margin-bottom:1.5rem; }
+.live-head h1 { max-width:14ch; }
+.live-head .lede { margin-bottom:0; }
+.live-badge { display:inline-flex; align-items:center; gap:.45rem; padding:.4rem .7rem; border:1px solid color-mix(in srgb,var(--good) 45%,var(--line)); border-radius:999px; color:var(--good); font:600 .67rem "IBM Plex Mono",monospace; letter-spacing:.09em; text-transform:uppercase; }
+.live-badge::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; box-shadow:0 0 0 5px color-mix(in srgb,var(--good) 15%,transparent); animation:pulse 1.8s ease-in-out infinite; }
+.builder { margin-bottom:1.5rem; }
+.builder summary { width:max-content; cursor:pointer; color:var(--ink-soft); font-size:.82rem; padding:.5rem .85rem; border:1px solid var(--line); border-radius:999px; background:var(--chip); }
+.builder[open] summary { margin-bottom:1rem; border-color:var(--accent); color:var(--accent); }
+.builder .sim-wrap { margin-bottom:.8rem; }
+.builder .team { padding:.85rem; }
+.builder .slots { gap:.35rem; }
+.builder .slot { min-height:52px; }
+.builder .hint { margin-bottom:.7rem; }
+.arena { position:relative; overflow:hidden; min-height:610px; border:1px solid color-mix(in srgb,var(--accent) 46%,var(--line)); border-radius:26px; background:radial-gradient(ellipse at center,rgba(130,28,48,.3),transparent 55%),linear-gradient(180deg,#241019 0%,#12080d 52%,#1b0c12 100%); box-shadow:0 30px 80px rgba(0,0,0,.3); isolation:isolate; }
+.arena::before { content:""; position:absolute; inset:0; opacity:.18; pointer-events:none; background-image:linear-gradient(rgba(241,214,138,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(241,214,138,.06) 1px,transparent 1px); background-size:40px 40px; mask-image:linear-gradient(to bottom,transparent,#000 30%,#000 75%,transparent); }
+.arena::after { content:""; position:absolute; left:7%; right:7%; top:50%; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:.36; box-shadow:0 0 32px var(--accent); }
+.arena-top { position:relative; z-index:4; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; min-height:68px; padding:.8rem 1.1rem; border-bottom:1px solid var(--line); background:rgba(14,5,9,.62); backdrop-filter:blur(12px); }
+.team-label { font:600 .68rem "IBM Plex Mono",monospace; letter-spacing:.14em; text-transform:uppercase; color:#9fd9bc; }
+.team-label.enemy { text-align:right; color:#ef9a9e; }
+.round { text-align:center; }
+.round span { display:block; color:var(--mute); font-size:.58rem; letter-spacing:.17em; text-transform:uppercase; }
+.round strong { font:500 1.35rem "Fraunces",serif; color:var(--accent); }
+.stage { position:relative; z-index:2; display:grid; grid-template-rows:1fr 1fr; gap:2.25rem; min-height:470px; padding:2rem clamp(.8rem,3vw,2rem); }
+.formation { display:flex; justify-content:center; align-items:end; gap:clamp(.35rem,1.4vw,1rem); min-width:0; }
+.formation.enemy { align-items:start; }
+.fighter { --side:#72c69a; position:relative; width:min(16.5vw,138px); min-width:0; padding:.6rem .55rem .65rem; border:1px solid color-mix(in srgb,var(--side) 32%,var(--line)); border-radius:16px; background:linear-gradient(155deg,color-mix(in srgb,var(--side) 9%,#2b1720),#160b10); box-shadow:0 14px 26px rgba(0,0,0,.25); transform-origin:center; transition:opacity .32s ease,filter .32s ease,transform .32s ease; }
+.formation.enemy .fighter { --side:#ef7d82; }
+.fighter .portrait { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#130a0e; border:1px solid color-mix(in srgb,var(--side) 36%,transparent); }
+.fighter img { display:block; width:100%; height:100%; object-fit:cover; }
+.fighter .lvtag { position:absolute; top:.35rem; right:.35rem; padding:.15rem .35rem; border-radius:999px; background:rgba(10,4,7,.78); color:#fff; font:600 .56rem "IBM Plex Mono",monospace; backdrop-filter:blur(6px); }
+.fighter .fname { display:block; margin:.5rem 0 .32rem; overflow:hidden; color:var(--ink); font-size:clamp(.62rem,1.1vw,.78rem); font-weight:600; text-overflow:ellipsis; white-space:nowrap; }
+.hp-row { display:flex; justify-content:space-between; gap:.3rem; color:var(--mute); font:500 .55rem "IBM Plex Mono",monospace; }
+.hp-track { height:6px; margin-top:.25rem; overflow:hidden; border-radius:9px; background:#090507; }
+.hp-fill { display:block; width:100%; height:100%; border-radius:inherit; background:linear-gradient(90deg,color-mix(in srgb,var(--side) 66%,#fff),var(--side)); transition:width .38s cubic-bezier(.2,.8,.2,1); }
+.fighter.hit-a { animation:lunge-a .38s ease; z-index:8; }
+.fighter.hit-b { animation:lunge-b .38s ease; z-index:8; }
+.fighter.struck { animation:shake .38s ease; }
+.fighter.skill { animation:skillflash .62s ease; }
+.fighter.summoned { animation:summon .55s cubic-bezier(.2,.85,.2,1) both; }
+.fighter.ko { opacity:.22; filter:grayscale(1); transform:scale(.86) translateY(12px); }
+.float-dmg { position:absolute; z-index:12; left:50%; top:32%; pointer-events:none; color:#fff0b5; font:700 clamp(1rem,2vw,1.45rem) "IBM Plex Mono",monospace; text-shadow:0 2px 8px #000,0 0 18px #d84055; animation:floatup .85s ease-out forwards; }
+.event-toast { position:absolute; z-index:10; left:50%; top:50%; width:min(520px,calc(100% - 2rem)); transform:translate(-50%,-50%); padding:.7rem 1rem; border:1px solid var(--line); border-radius:12px; background:rgba(18,7,12,.88); color:var(--ink-soft); text-align:center; font-size:.78rem; line-height:1.4; box-shadow:0 16px 40px rgba(0,0,0,.38); backdrop-filter:blur(12px); opacity:0; pointer-events:none; }
+.event-toast.show { animation:toast .9s ease both; }
+.event-toast b { color:var(--accent); }
+.empty-stage { align-self:center; color:var(--mute); font-size:.75rem; letter-spacing:.08em; text-align:center; }
+.transport { position:relative; z-index:5; display:grid; grid-template-columns:auto auto auto minmax(110px,1fr) auto; align-items:center; gap:.55rem; padding:.85rem 1rem; border-top:1px solid var(--line); background:rgba(14,5,9,.72); backdrop-filter:blur(14px); }
+.transport button,.transport select,.seed-input { height:38px; border:1px solid var(--line); border-radius:9px; background:var(--chip); color:var(--ink-soft); font:600 .74rem "Instrument Sans",sans-serif; }
+.transport button { min-width:42px; padding:0 .8rem; cursor:pointer; }
+.transport button:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.transport button:disabled { opacity:.35; cursor:not-allowed; }
+.transport .watch { border-color:var(--accent); background:var(--accent); color:#1b0d0a; }
+.transport .watch:hover:not(:disabled) { color:#1b0d0a; filter:brightness(1.08); }
+.timeline { height:6px; overflow:hidden; border-radius:99px; background:#3b2028; cursor:pointer; }
+.timeline i { display:block; width:0; height:100%; background:linear-gradient(90deg,var(--accent),#d4455c); transition:width .12s linear; }
+.stepcount { color:var(--mute); font:500 .66rem "IBM Plex Mono",monospace; white-space:nowrap; text-align:center; }
+.battle-setup { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem; margin:1rem 0 1.3rem; }
+.battle-setup label { display:flex; align-items:center; gap:.45rem; color:var(--mute); font-size:.72rem; }
+.seed-input { width:130px; padding:0 .6rem; font-family:"IBM Plex Mono",monospace; }
+.statusline { margin-left:auto; color:var(--mute); font-size:.75rem; }
+.result-card { display:none; position:absolute; z-index:20; inset:50% auto auto 50%; width:min(390px,calc(100% - 2rem)); transform:translate(-50%,-50%); padding:1.6rem; border:1px solid var(--accent); border-radius:18px; background:rgba(23,9,14,.95); text-align:center; box-shadow:0 28px 80px rgba(0,0,0,.65); backdrop-filter:blur(18px); }
+.result-card.show { display:block; animation:summon .4s ease both; }
+.result-card .rk { color:var(--accent); font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; }
+.result-card h2 { margin:.25rem 0 .35rem; font-size:2rem; }
+.result-card p { margin:0; color:var(--mute); font-size:.82rem; }
+.result-card button { margin-top:1rem; padding:.5rem 1rem; border:1px solid var(--line); border-radius:999px; background:var(--chip); color:var(--ink); cursor:pointer; }
+@keyframes pulse { 50% { opacity:.42; transform:scale(.8); } }
+@keyframes lunge-a { 50% { transform:translateY(-20px) scale(1.04); } }
+@keyframes lunge-b { 50% { transform:translateY(20px) scale(1.04); } }
+@keyframes shake { 25% { transform:translateX(-7px); } 50% { transform:translateX(7px); } 75% { transform:translateX(-4px); } }
+@keyframes skillflash { 35% { filter:brightness(1.8); box-shadow:0 0 0 3px var(--accent),0 0 36px var(--accent); transform:scale(1.05); } }
+@keyframes summon { from { opacity:0; transform:translateY(28px) scale(.75); filter:blur(6px); } }
+@keyframes floatup { to { opacity:0; transform:translate(-50%,-55px) scale(1.15); } from { transform:translate(-50%,0); } }
+@keyframes toast { 0%,100% { opacity:0; transform:translate(-50%,-42%); } 16%,76% { opacity:1; transform:translate(-50%,-50%); } }
+@media (max-width:760px) {
+  .live-head { grid-template-columns:1fr; gap:.7rem; }
+  .live-badge { justify-self:start; }
+  .arena { min-height:680px; border-radius:20px; }
+  .arena-top { min-height:58px; padding:.65rem .75rem; }
+  .stage { min-height:540px; gap:3rem; padding:1.35rem .45rem; }
+  .formation { gap:.25rem; }
+  .fighter { width:calc((100vw - 3.5rem)/5); padding:.35rem .3rem .42rem; border-radius:10px; }
+  .fighter .portrait { border-radius:8px; }
+  .fighter .fname { font-size:.55rem; margin:.32rem 0 .22rem; }
+  .fighter .lvtag { top:.2rem; right:.2rem; font-size:.45rem; }
+  .hp-row { font-size:.47rem; }
+  .hp-track { height:5px; }
+  .transport { grid-template-columns:1fr 1fr 1fr; }
+  .transport .timeline { grid-column:1 / -1; grid-row:1; }
+  .stepcount { grid-column:1 / -1; grid-row:2; }
+  .transport select { min-width:0; }
+  .statusline { width:100%; margin-left:0; }
+}
+@media (prefers-reduced-motion:reduce) { .live-badge::before,.fighter,.float-dmg,.event-toast,.result-card { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+</style>
 <div class="wrap">
   <a class="backlink" href="./index.html"><span aria-hidden="true">←</span> Masquerade atelier</a>
-  <p class="eyebrow">Sandbox · real battle engine</p>
-  <h1>Matchup <em>simulator</em></h1>
-  <p class="lede">Tap a slot to pick a mask (legendary / epic / rare columns). To reorder, tap the ⠿ handle on a
-  filled slot then tap where it should go — or drag it on desktop. Slot order matters, front to back. Then run it
-  over many seeds on the same engine as the rankings (validated 1000/1000 vs the client's LuaJIT).</p>
+  <header class="live-head">
+    <div><p class="eyebrow">Live floor · deterministic playback</p><h1>Watch the <em>dance unfold.</em></h1><p class="lede">Build two formations, choose a seed, then play every strike, skill, summon, and knockout from the real battle engine.</p></div>
+    <span class="live-badge">Engine connected</span>
+  </header>
 
-  <div class="sim-wrap">
-    <div class="team a">
-        <h3>Your lineup</h3><div class="sub">front → back, slot 1 to 5</div>
-        <div class="slots" id="slots-a"></div>
-        <div class="team-tools">
-          <div class="pre" id="pre-a">
-            <button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button>
-            <div class="pre-menu"></div>
-          </div>
-          <button data-act="clear" data-side="a" type="button">clear</button>
-        </div>
-      </div>
-    <div class="team b">
-        <h3>Opponent</h3><div class="sub">front → back, slot 1 to 5</div>
-        <div class="slots" id="slots-b"></div>
-        <div class="team-tools">
-          <div class="pre" id="pre-b">
-            <button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button>
-            <div class="pre-menu"></div>
-          </div>
-          <button data-act="clear" data-side="b" type="button">clear</button>
-        </div>
-      </div>
-  </div>
-  <p class="hint">No duplicate or conflicting masks in one lineup — same as the game.</p>
+  <details class="builder" open>
+    <summary>Build or change lineups</summary>
+    <div class="sim-wrap">
+      <div class="team a"><h3>Your lineup</h3><div class="sub">front → back, slot 1 to 5</div><div class="slots" id="slots-a"></div><div class="team-tools"><div class="pre" id="pre-a"><button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button><div class="pre-menu"></div></div><button data-act="clear" data-side="a" type="button">clear</button></div></div>
+      <div class="team b"><h3>Opponent</h3><div class="sub">front → back, slot 1 to 5</div><div class="slots" id="slots-b"></div><div class="team-tools"><div class="pre" id="pre-b"><button class="pre-btn" type="button">prefill from ranked <span aria-hidden="true">▾</span></button><div class="pre-menu"></div></div><button data-act="clear" data-side="b" type="button">clear</button></div></div>
+    </div>
+    <p class="hint">Tap a slot to choose a mask. Order matters; use the ⠿ handle to move one. Duplicate and conflicting masks are blocked.</p>
+    <div class="sim-tools"><button data-act="swap" type="button">swap sides</button><button data-act="copy" type="button">copy Yours → Opp</button></div>
+  </details>
 
-  <div class="sim-tools">
-    <button class="sim-go" id="go" type="button">Simulate</button>
-    <label>seeds <select id="seeds"><option>100</option><option selected>300</option><option>600</option><option>1000</option></select></label>
-    <button data-act="swap" type="button">swap sides</button>
-    <button data-act="copy" type="button">copy Yours → Opp</button>
-    <a href="./battle.html">Watch live battle →</a>
+  <div class="battle-setup">
+    <label>Battle seed <input class="seed-input" id="battle-seed" type="number" min="1" max="2147483647" value="145972072"></label>
+    <button class="sim-go" id="go" type="button">Prepare battle</button>
+    <span class="statusline" id="statusline">Top-ranked formations are ready.</span>
   </div>
 
-  <div class="result empty" id="result">Build both lineups and hit <b>Simulate</b>.</div>
-  <div class="logs" id="logs"></div>
+  <section class="arena" aria-label="Animated battle stage">
+    <div class="arena-top"><span class="team-label">Your masks</span><div class="round"><span>Round</span><strong id="round-num">—</strong></div><span class="team-label enemy">Opponent</span></div>
+    <div class="stage"><div class="formation enemy" id="formation-b"></div><div class="formation" id="formation-a"></div></div>
+    <div class="event-toast" id="event-toast" role="status" aria-live="polite"></div>
+    <div class="result-card" id="result-card"><span class="rk">Battle complete</span><h2 id="result-title"></h2><p id="result-copy"></p><button id="replay" type="button">Watch again</button></div>
+    <div class="transport">
+      <button id="prev" type="button" aria-label="Previous event">‹</button>
+      <button class="watch" id="play" type="button">Play</button>
+      <button id="next" type="button" aria-label="Next event">›</button>
+      <div class="timeline" id="timeline" aria-label="Battle progress"><i id="timeline-fill"></i></div>
+      <select id="speed" aria-label="Playback speed"><option value="1100">0.5×</option><option value="650" selected>1×</option><option value="360">2×</option><option value="170">4×</option></select>
+      <span class="stepcount" id="stepcount">0 / 0 events</span>
+    </div>
+  </section>
 
-  <footer>Engine ported from <code>DanceBattleContext</code>; deterministic per seed. Not affiliated with OneMT.</footer>
+  <footer>Playback is generated entirely in your browser from the deterministic <code>DanceBattleContext</code> port. No outcome is approximated. Not affiliated with OneMT.</footer>
 </div>
 
 <div class="picker" id="picker"><div class="picker-box">
@@ -1597,7 +1687,7 @@ document.querySelectorAll('.team-tools button[data-act="clear"]').forEach(b=>
 
 // ---------- battle log instrumentation (wrap engine once; only records when LOG != null) ----------
 let LOG = null;
-function dsc(x) { const m = MASKS[x.maskType]; return { s: (x.team && x.team.teamId) || 0, mt: x.maskType, n: m ? m.n : String(x.maskType), l: x.maskLv, o: x.order, c: !!x.isCall }; }
+function dsc(x) { const m = MASKS[x.maskType]; return { id:x.dancerAutoId, s:(x.team && x.team.teamId) || 0, mt:x.maskType, n:m ? m.n : (x.isCall ? 'Called partner' : String(x.maskType)), l:x.maskLv, o:x.order, c:!!x.isCall, h:Math.max(0,Math.round(x.hp || 0)), p:Math.max(1,Math.round((x.maskCfg && x.maskCfg.hp) || x.hp || 1)) }; }
 (function hook() {
   const RH = Dancer.prototype.reduceHpValue;
   Dancer.prototype.reduceHpValue = function(dmg, effect, mult) {
@@ -1608,7 +1698,7 @@ function dsc(x) { const m = MASKS[x.maskType]; return { s: (x.team && x.team.tea
       LOG.push({ k:'dmg', src: (effect.skill && effect.skill.creater) ? dsc(effect.skill.creater) : null,
                  tgt: dsc(this), amt: Math.round(r[1]), left: Math.max(0, Math.round(this.hp)),
                  sk: !!(effect.skill && effect.skill.skillId !== -1) }, ...during);
-    }
+    } else if (LOG && effect && r && r[0] && r[1] === 0) LOG.push({ k:'block', src:(effect.skill && effect.skill.creater) ? dsc(effect.skill.creater) : null, tgt:dsc(this) });
     return r;
   };
   const AD = Context.prototype.addDieDancer;
@@ -1617,80 +1707,115 @@ function dsc(x) { const m = MASKS[x.maskType]; return { s: (x.team && x.team.tea
   Skill.prototype.excute = function(td, te) { if (LOG && this.skillId !== -1 && this.creater) LOG.push({ k:'skill', src: dsc(this.creater) }); return SE.call(this, td, te); };
   const AJ = Dancer.prototype.afterJoinTeam;
   Dancer.prototype.afterJoinTeam = function() { if (LOG && this.isCall) LOG.push({ k:'summon', tgt: dsc(this) }); return AJ.call(this); };
+  const RL = Dancer.prototype.relive;
+  Dancer.prototype.relive = function(rate) { const r = RL.call(this, rate); if (LOG && r) LOG.push({ k:'relive', tgt:dsc(this) }); return r; };
   const DA = Context.prototype.doAtk;
   Context.prototype.doAtk = function() { if (LOG) LOG.push({ k:'round', n: (this._battleCount || 0) + 1 }); return DA.call(this); };
 })();
 function battleLog(A, B, seed) { LOG = []; const o = simulate(CFG, A, B, seed); const events = LOG; LOG = null; return { result: o.result, survivorDiff: o.survivorDiff, events }; }
 
-function renderLog(title, cls, seed, r) {
-  const box = document.createElement('details');
-  box.className = 'logbox ' + cls; box.open = (cls === 'win');
-  box.innerHTML = `<summary><span>${title}</span><span class="seed">seed ${seed}</span></summary>`;
-  const feed = document.createElement('div'); feed.className = 'logfeed';
-  const nm = x => x ? `<b>${x.n}</b>${x.c ? ' (summon)' : ''}` : 'a dancer';
-  const side = x => (x && x.s === 1) ? 'a' : 'd';
-  let out = '', curRound = 0, lastRd = -1, count = 0, more = 0;
-  for (const e of r.events) {
-    if (e.k === 'round') { curRound = e.n; continue; }
-    if (count >= 160) { more++; continue; }
-    if (curRound > 0 && curRound !== lastRd) { out += `<div class="rd">round ${curRound}</div>`; lastRd = curRound; }
-    count++;
-    if (e.k === 'dmg') {
-      const eff = e.src && e.sk ? ((MASKS[e.src.mt] || {}).eff || [])[e.src.l - 1] : null;
-      out += `<div class="ev ${side(e.src)}">${nm(e.src)} ${e.sk ? 'skill' : 'hits'} ${nm(e.tgt)} `
-           + `<span class="k">−${e.amt}</span> Pop → ${e.left} left${eff ? ` <span style="color:var(--mute)">· ${eff}</span>` : ''}</div>`;
-    } else if (e.k === 'skill') {
-      const eff = ((MASKS[e.src.mt] || {}).eff || [])[e.src.l - 1] || 'skill fires';
-      out += `<div class="ev ${side(e.src)}">${nm(e.src)} — <span style="color:var(--ink-soft)">${eff}</span></div>`;
-    } else if (e.k === 'summon') {
-      out += `<div class="ev ${side(e.tgt)}">${nm(e.tgt)} joins ${e.tgt.s === 1 ? 'your' : 'the enemy'} line</div>`;
-    } else if (e.k === 'die') {
-      out += `<div class="ev ${e.tgt.s === 1 ? 'd' : 'a'}"><b>${e.tgt.n} is out</b></div>`;
-    }
-  }
-  if (more) out += `<div class="rd">…${more} more events</div>`;
-  const fin = r.result === 1 ? `You win — surviving margin ${r.survivorDiff >= 0 ? '+' : ''}${r.survivorDiff}`
-            : r.result === 2 ? `You lose — surviving margin ${r.survivorDiff}`
-            : `Draw — both lines wiped in the same exchange`;
-  out += `<div class="fin ${r.result === 1 ? 'a' : r.result === 2 ? 'd' : ''}">${fin}</div>`;
-  feed.innerHTML = out || '<div class="ev">no events recorded</div>';
-  box.appendChild(feed);
-  return box;
-}
-
-// ---------- simulate ----------
-document.getElementById('go').onclick = ()=>{
-  const A = team.a.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
-  const B = team.b.filter(Boolean).map(s=> ({ type: +s.type, level: s.level }));
-  const res = document.getElementById('result'), logs = document.getElementById('logs');
-  logs.replaceChildren();
-  if (A.length < 1 || B.length < 1) { res.className = 'result empty'; res.textContent = 'Both lineups need at least one mask.'; return; }
-  const N = +document.getElementById('seeds').value;
-  let w=0, d=0, l=0, marg=0, winSeed=0, lossSeed=0, drawSeed=0;
-  for (let k = 1; k <= N; k++) {
-    const seed = (k * 2654435761) % 2147483647 + 1;
-    const o = simulate(CFG, A, B, seed);
-    if (o.result === 1) { w++; if (!winSeed) winSeed = seed; }
-    else if (o.result === 2) { l++; if (!lossSeed) lossSeed = seed; }
-    else { d++; if (!drawSeed) drawSeed = seed; }
-    marg += o.survivorDiff || 0;
-  }
-  const wr = (w + d/2) / N * 100;
-  const cls = wr > 52 ? 'win' : wr < 48 ? 'lose' : 'even';
-  res.className = 'result';
-  res.innerHTML =
-      `<div class="res-top"><span class="res-wr ${cls}">${wr.toFixed(1)}%</span>`
-    + `<span class="res-sub">win rate for <b>your lineup</b> over ${N} seeds (draws count &frac12;)</span></div>`
-    + `<div class="res-bar"><i class="w" style="width:${w/N*100}%"></i><i class="d" style="width:${d/N*100}%"></i><i class="l" style="width:${l/N*100}%"></i></div>`
-    + `<div class="res-legend"><span style="color:var(--good)">${w} win</span><span style="color:var(--mute)">${d} draw</span><span style="color:var(--bad)">${l} loss</span></div>`
-    + `<div class="res-note">avg surviving-body margin ${marg/N>=0?'+':''}${(marg/N).toFixed(2)} (your bodies − theirs at the end). Reorder the slots and re-run — it changes the outcome.</div>`;
-
-  if (winSeed)  logs.appendChild(renderLog('A dance you won',  'win',  winSeed,  battleLog(A, B, winSeed)));
-  if (lossSeed) logs.appendChild(renderLog('A dance you lost', 'lose', lossSeed, battleLog(A, B, lossSeed)));
-  if (!winSeed && !lossSeed && drawSeed) logs.appendChild(renderLog('A drawn dance', 'even', drawSeed, battleLog(A, B, drawSeed)));
+// ---------- animated playback ----------
+const ui = {
+  a:document.getElementById('formation-a'), b:document.getElementById('formation-b'), round:document.getElementById('round-num'),
+  toast:document.getElementById('event-toast'), play:document.getElementById('play'), prev:document.getElementById('prev'), next:document.getElementById('next'),
+  speed:document.getElementById('speed'), count:document.getElementById('stepcount'), fill:document.getElementById('timeline-fill'), timeline:document.getElementById('timeline'),
+  result:document.getElementById('result-card'), resultTitle:document.getElementById('result-title'), resultCopy:document.getElementById('result-copy'), status:document.getElementById('statusline')
 };
+let playback = null, eventIndex = 0, timer = 0, finishTimer = 0, playing = false, cards = new Map();
+const esc = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function cardFor(desc) { return desc ? cards.get(desc.id) : null; }
+function makeFighter(desc, hp) {
+  const m = MASKS[String(desc.mt)] || { i:'./assets/masquerade-medal.png', s:[] }, el = document.createElement('article');
+  const max = Math.max(1,desc.p || (m && m.s[desc.l-1][1]) || hp || 1);
+  el.className = 'fighter' + (desc.c ? ' summoned' : ''); el.dataset.id = desc.id;
+  el.innerHTML = `<div class="portrait"><img src="${m.i}" alt=""><span class="lvtag">Lv ${desc.l}</span></div><span class="fname">${esc(desc.n)}</span><div class="hp-row"><span>Popularity</span><span class="hp-text">${hp}/${max}</span></div><div class="hp-track"><i class="hp-fill"></i></div>`;
+  const card = { el, desc:{...desc}, hp, max };
+  cards.set(desc.id,card); ui[desc.s === 1 ? 'a' : 'b'].appendChild(el); updateHp(card,hp,false);
+  return card;
+}
+function updateHp(card, hp, animate=true) {
+  card.hp = Math.max(0,hp); card.max = Math.max(card.max,card.hp);
+  card.el.querySelector('.hp-text').textContent = `${card.hp}/${card.max}`;
+  const fill = card.el.querySelector('.hp-fill'); if (!animate) fill.style.transition = 'none';
+  fill.style.width = `${Math.max(0,Math.min(100,card.hp/card.max*100))}%`;
+  if (!animate) requestAnimationFrame(()=> fill.style.transition = '');
+}
+function resetStage() {
+  stop(); cards.clear(); ui.a.replaceChildren(); ui.b.replaceChildren(); ui.round.textContent = '—'; ui.result.classList.remove('show'); ui.toast.classList.remove('show');
+  let id = 0;
+  for (const side of ['a','b']) for (const s of team[side].filter(Boolean)) {
+    id++; const m = MASKS[String(s.type)], hp = m.s[s.level-1][1];
+    makeFighter({id,s:side==='a'?1:2,mt:+s.type,n:m.n,l:s.level,o:id,c:false,p:hp},hp).el.classList.remove('summoned');
+  }
+  eventIndex = 0; updateTransport();
+}
+function pulseToast(html) {
+  ui.toast.classList.remove('show'); ui.toast.innerHTML = html; void ui.toast.offsetWidth; ui.toast.classList.add('show');
+}
+function syncOrder(desc,card) {
+  if (!card || !desc.o) return; card.desc.o = desc.o;
+  const host = desc.s===1 ? ui.a : ui.b;
+  [...host.children].sort((x,y)=>(cards.get(+x.dataset.id)?.desc.o||9)-(cards.get(+y.dataset.id)?.desc.o||9)).forEach(x=>host.appendChild(x));
+}
+function animateClass(el,cls,ms=620) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(()=>el.classList.remove(cls),ms); }
+function applyEvent(e, animate=true) {
+  if (e.k === 'round') { ui.round.textContent = e.n; return; }
+  const src = cardFor(e.src), tgt = cardFor(e.tgt); if (src) syncOrder(e.src,src); if (tgt) syncOrder(e.tgt,tgt);
+  if (e.k === 'skill') {
+    if (animate) animateClass(src && src.el,'skill');
+    const eff = ((MASKS[String(e.src.mt)]||{}).eff||[])[e.src.l-1] || 'Skill fires';
+    if (animate) pulseToast(`<b>${esc(e.src.n)}</b> · ${esc(eff)}`);
+  } else if (e.k === 'dmg') {
+    if (src && animate) animateClass(src.el,e.src.s===1?'hit-a':'hit-b',420);
+    if (tgt) { tgt.max=Math.max(tgt.max,e.left+e.amt); updateHp(tgt,e.left,animate); if (animate) { animateClass(tgt.el,'struck',420); const f=document.createElement('span'); f.className='float-dmg'; f.textContent=`−${e.amt}`; tgt.el.appendChild(f); setTimeout(()=>f.remove(),900); } }
+    if (animate) ui.status.textContent = `${e.src ? e.src.n : 'An effect'} ${e.sk?'casts at':'hits'} ${e.tgt.n} for ${e.amt} Popularity.`;
+  } else if (e.k === 'block') {
+    if (tgt && animate) animateClass(tgt.el,'skill');
+    if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> blocks the hit`);
+  } else if (e.k === 'die') {
+    if (tgt) { updateHp(tgt,0,animate); tgt.el.classList.add('ko'); }
+    if (animate) pulseToast(`<b>${esc(e.tgt.n)}</b> leaves the floor`);
+  } else if (e.k === 'summon') {
+    let card = cardFor(e.tgt); if (!card) card=makeFighter(e.tgt,e.tgt.h||e.tgt.p); else { card.el.classList.remove('ko'); updateHp(card,e.tgt.h||card.max,animate); }
+    syncOrder(e.tgt,card); if (animate) { animateClass(card.el,'summoned',650); pulseToast(`<b>${esc(e.tgt.n)}</b> joins the ${e.tgt.s===1?'home':'opponent'} line`); }
+  } else if (e.k === 'relive') {
+    let card=cardFor(e.tgt); if (!card) card=makeFighter(e.tgt,e.tgt.h||e.tgt.p);
+    card.el.classList.remove('ko'); updateHp(card,e.tgt.h||e.tgt.p,animate); syncOrder(e.tgt,card);
+    if (animate) { animateClass(card.el,'summoned',650); pulseToast(`<b>${esc(e.tgt.n)}</b> returns to the floor`); }
+  }
+}
+function updateTransport() {
+  const total=playback?playback.events.length:0; ui.count.textContent=`${eventIndex} / ${total} events`; ui.fill.style.width=`${total?eventIndex/total*100:0}%`;
+  ui.prev.disabled=!playback||eventIndex===0; ui.next.disabled=!playback||eventIndex>=total; ui.play.disabled=!playback||eventIndex>=total; ui.play.textContent=playing?'Pause':'Play';
+}
+function finishBattle() {
+  stop(); const r=playback;
+  ui.resultTitle.textContent=r.result===1?'Your lineup wins':r.result===2?'Opponent wins':'The floor ends level';
+  ui.resultCopy.textContent=r.result===0?'Both lines fall in the same exchange.':`Surviving-body margin ${r.survivorDiff>=0?'+':''}${r.survivorDiff}. Seed ${r.seed}.`;
+  ui.result.classList.add('show'); ui.status.textContent='Battle complete.'; updateTransport();
+}
+function step(animate=true) { if (!playback||eventIndex>=playback.events.length) { if(playback)finishBattle(); return; } applyEvent(playback.events[eventIndex++],animate); updateTransport(); if(eventIndex>=playback.events.length) { clearTimeout(finishTimer); finishTimer=setTimeout(finishBattle,animate?550:0); } }
+function schedule() { clearTimeout(timer); if (!playing) return; step(true); if (playing&&eventIndex<playback.events.length) timer=setTimeout(schedule,+ui.speed.value); }
+function play() { if (!playback) return; if(eventIndex>=playback.events.length) seek(0); playing=!playing; updateTransport(); if(playing)schedule(); else clearTimeout(timer); }
+function stop() { playing=false; clearTimeout(timer); clearTimeout(finishTimer); timer=0; finishTimer=0; updateTransport(); }
+function seek(to) { if(!playback)return; stop(); resetStage(); eventIndex=0; while(eventIndex<to) step(false); ui.result.classList.remove('show'); updateTransport(); }
+function prepare(autoPlay=true) {
+  const A=team.a.filter(Boolean).map(s=>({type:+s.type,level:s.level})), B=team.b.filter(Boolean).map(s=>({type:+s.type,level:s.level}));
+  if(!A.length||!B.length){ui.status.textContent='Both lineups need at least one mask.';return;}
+  let seed=Math.floor(+document.getElementById('battle-seed').value)||1; seed=Math.max(1,Math.min(2147483647,seed)); document.getElementById('battle-seed').value=seed;
+  playback={...battleLog(A,B,seed),seed}; resetStage(); document.querySelector('.builder').open=false; ui.status.textContent=`${playback.events.length} exact engine events loaded from seed ${seed}.`;
+  if(autoPlay){playing=true;updateTransport();schedule();document.querySelector('.arena').scrollIntoView({behavior:'smooth',block:'center'});}
+}
+document.getElementById('go').onclick=()=>prepare(true);
+ui.play.onclick=play; ui.next.onclick=()=>{stop();step(true);}; ui.prev.onclick=()=>seek(Math.max(0,eventIndex-1));
+ui.timeline.onclick=e=>{if(playback)seek(Math.round((e.clientX-ui.timeline.getBoundingClientRect().left)/ui.timeline.clientWidth*playback.events.length));};
+document.getElementById('replay').onclick=()=>{ui.result.classList.remove('show');seek(0);play();};
+document.getElementById('battle-seed').addEventListener('keydown',e=>{if(e.key==='Enter')prepare(true);});
 
-renderTeam('a'); renderTeam('b');
+// Give the stage a useful first scene; the builder remains fully editable.
+team.a=PREFILL.find(p=>p.t==='Gold').m.map(([type,level])=>({type:String(type),level}));
+team.b=PREFILL.find(p=>p.t==='Mixed').m.map(([type,level])=>({type:String(type),level}));
+renderTeam('a'); renderTeam('b'); prepare(false);
 
 </script>
 </body>

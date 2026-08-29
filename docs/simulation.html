@@ -243,9 +243,10 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
 .slot .grip.on { color: var(--accent); border-color: var(--accent); background: var(--chip-on); }
 .slot .rm:hover { color: var(--bad); border-color: var(--bad); }
 .team-tools { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
-.team-tools button, .sim-tools button { font: inherit; font-size: .76rem; padding: .3rem .7rem; border-radius: 999px;
+.team-tools button, .sim-tools button, .sim-tools a { font: inherit; font-size: .76rem; padding: .3rem .7rem; border-radius: 999px;
   border: 1px solid var(--line); background: var(--chip); color: var(--ink-soft); cursor: pointer; }
-.team-tools button:hover, .sim-tools button:hover { border-color: var(--accent); color: var(--accent); }
+.sim-tools a { text-decoration:none; }
+.team-tools button:hover, .sim-tools button:hover, .sim-tools a:hover { border-color: var(--accent); color: var(--accent); }
 .sim-tools select { font: inherit; font-size: .76rem; background: var(--chip); color: var(--ink);
   border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; max-width: 100%; }
 .pre { position: relative; display: inline-block; }
@@ -384,6 +385,7 @@ footer code { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color:
     <label>seeds <select id="seeds"><option>100</option><option selected>300</option><option>600</option><option>1000</option></select></label>
     <button data-act="swap" type="button">swap sides</button>
     <button data-act="copy" type="button">copy Yours → Opp</button>
+    <a href="./battle.html">Watch live battle →</a>
   </div>
 
   <div class="result empty" id="result">Build both lineups and hit <b>Simulate</b>.</div>
