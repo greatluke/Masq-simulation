@@ -12,6 +12,7 @@
   --line: #e5ddd1; --bar-track: #ece4da;
   --chip: #fff; --chip-on: color-mix(in srgb, var(--accent) 16%, #fff);
   --bad: #b23b32; --chip-ex: color-mix(in srgb, #b23b32 12%, #fff);
+  --good: #2f7d55; --chip-good: color-mix(in srgb, #2f7d55 12%, #fff);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -19,7 +20,7 @@
     --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
     --line: #342b41; --bar-track: #2c2439;
     --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
-    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31);
+    --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
   }
 }
 :root[data-theme="dark"] {
@@ -27,7 +28,7 @@
   --ink: #f0eaf4; --ink-soft: #c7bed2; --mute: #948a9f;
   --line: #342b41; --bar-track: #2c2439;
   --chip: #241d31; --chip-on: color-mix(in srgb, var(--accent) 30%, #241d31);
-  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31);
+  --bad: #e5817a; --chip-ex: color-mix(in srgb, #e5817a 22%, #241d31); --good: #6cc08d; --chip-good: color-mix(in srgb, #6cc08d 20%, #241d31);
 }
 body {
   margin: 0; background: var(--ground); color: var(--ink);
@@ -111,15 +112,17 @@ h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.4re
 .mu-grp.hard { grid-column: 1; }
 .mu-grp.soft { grid-column: 2; }
 .mu-lbl { font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
-.mu-lbl.lose { color: var(--bad); }
-.mu-lbl.win { color: var(--accent); }
-.mu-chip { display: flex; align-items: center; gap: .45rem; font-size: .78rem; padding: .3rem .5rem; border-radius: 9px; border: 1px solid var(--line); background: var(--chip); }
+.mu-grp.hard .mu-lbl { color: var(--bad); }
+.mu-grp.soft .mu-lbl { color: var(--good); }
+.mu-chip { display: flex; align-items: center; gap: .45rem; font-size: .78rem; padding: .32rem .5rem; border-radius: 9px; border: 1px solid var(--line); background: var(--chip); }
 .mu-chip b { font-family: "IBM Plex Mono", monospace; flex: none; width: 2.6rem; }
 .mu-chip .mu-r { color: var(--mute); font-family: "IBM Plex Mono", monospace; flex: none; font-size: .72rem; }
 .mu-chip .mu-ics { display: inline-flex; gap: 3px; margin-left: auto; }
-.mu-chip .mu-ics img { width: 32px; height: 32px; border-radius: 6px; background: var(--paper-2); display: block; }
-.mu-chip.lose { border-color: var(--bad); background: var(--chip-ex); }
-.mu-chip.win { border-color: var(--accent); background: var(--chip-on); }
+.mu-chip .mu-ics img { width: 40px; height: 40px; border-radius: 7px; background: var(--paper-2); display: block; }
+.mu-grp.hard .mu-chip { border-color: var(--bad); background: var(--chip-ex); }
+.mu-grp.hard .mu-chip b { color: var(--bad); }
+.mu-grp.soft .mu-chip { border-color: var(--good); background: var(--chip-good); }
+.mu-grp.soft .mu-chip b { color: var(--good); }
 @media (max-width: 620px) { .drawer { grid-template-columns: 1fr; } .mu-grp.hard, .mu-grp.soft { grid-column: 1; } }
 .lineup { display: flex; flex-wrap: wrap; gap: .5rem; }
 .m { position: relative; width: 90px; flex: none; display: flex; flex-direction: column; align-items: center; gap: .22rem; text-align: center; }
